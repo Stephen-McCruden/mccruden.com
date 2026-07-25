@@ -7,25 +7,25 @@ import {
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const description =
-	'About Stephen McCruden: field engineering, Kubernetes, infrastructure automation, observability, and reliable systems.';
+	'About Stephen McCruden: field engineering, infrastructure automation, Kubernetes, observability, and reliable systems.';
 ---
 
 <BaseLayout title={`About | ${SITE_TITLE}`} description={description}>
 	<main id="main-content" class="page">
-		<header class="about-hero">
-			<div class="about-intro">
+		<header class="page-hero">
+			<div class="page-hero-copy">
 				<p class="eyebrow">About me</p>
-				<h1>I turn operational experience into better systems.</h1>
+				<h1>Field experience backed by a serious infrastructure practice.</h1>
 				<p class="lede">
-					I’m Stephen McCruden, a field engineer focused on reliable
-					infrastructure, automation, and the disciplined work required
-					to keep important systems running.
+					I’m Stephen McCruden, a field engineer in the Washington,
+					D.C. region. I support important communications systems and
+					build hands-on experience in platform engineering,
+					automation, and site reliability through my homelab.
 				</p>
 			</div>
-
-			<aside class="profile-card surface" aria-label="Professional snapshot">
-				<div class="profile-mark" aria-hidden="true">SM</div>
-				<dl>
+			<aside class="page-hero-aside">
+				<p>Professional profile</p>
+				<dl class="fact-list">
 					<div>
 						<dt>Role</dt>
 						<dd>Field Engineer</dd>
@@ -35,191 +35,155 @@ const description =
 						<dd>Mission-critical communications</dd>
 					</div>
 					<div>
-						<dt>Focus</dt>
-						<dd>Infrastructure & reliability</dd>
-					</div>
-					<div>
 						<dt>Region</dt>
 						<dd>Washington, D.C. area</dd>
+					</div>
+					<div>
+						<dt>Certification</dt>
+						<dd>CompTIA Network+</dd>
 					</div>
 				</dl>
 			</aside>
 		</header>
 
-		<section class="story-section" aria-labelledby="work-title">
-			<div class="section-index">
-				<span>01</span>
-				<p>Professional work</p>
-			</div>
-			<div class="story-copy">
-				<h2 id="work-title">Reliability starts before the incident.</h2>
-				<p>
-					I support mission-critical public-safety communications
-					infrastructure. My work includes system upgrades, lab
-					validation, troubleshooting, documentation, and coordinating
-					technical work across teams and customer environments.
-				</p>
-				<p>
-					That environment has shaped how I approach engineering:
-					understand the dependencies, document the procedure, validate
-					the result, and prepare for what happens when something fails.
-					A system is only as reliable as the people, processes, and
-					recovery paths around it.
-				</p>
-			</div>
-		</section>
-
-		<section class="story-section" aria-labelledby="lab-title">
-			<div class="section-index">
-				<span>02</span>
-				<p>The homelab</p>
-			</div>
-			<div class="story-copy">
-				<h2 id="lab-title">A lab for practicing the full operating model.</h2>
-				<p>
-					My primary engineering project is a three-node Kubernetes
-					platform running on Proxmox. It is a reproducible environment
-					for infrastructure engineering—not simply a collection of
-					self-hosted applications.
-				</p>
-
-				<div class="lab-stack">
-					<article>
-						<span>Provision</span>
-						<strong>Terraform defines the virtual infrastructure.</strong>
-					</article>
-					<article>
-						<span>Configure</span>
-						<strong>Ansible builds and hardens every node.</strong>
-					</article>
-					<article>
-						<span>Operate</span>
-						<strong>Flux reconciles the platform from Git.</strong>
-					</article>
-					<article>
-						<span>Observe</span>
-						<strong>Prometheus and Grafana expose behavior.</strong>
-					</article>
-				</div>
-
-				<p>
-					The cluster has been destroyed and rebuilt without
-					undocumented manual intervention. Ongoing work expands
-					storage, centralized logging, disaster recovery, application
-					delivery, and deliberate failure testing.
-				</p>
-
-				<a
-					class="text-link"
-					href={HOMELAB_REPOSITORY_URL}
-					target="_blank"
-					rel="noreferrer"
-				>
-					Explore the homelab repository
-					<span aria-hidden="true">↗</span>
-				</a>
-			</div>
-		</section>
-
-		<section class="principles-section" aria-labelledby="principles-title">
-			<div class="section-heading">
-				<p class="eyebrow">Engineering principles</p>
-				<h2 id="principles-title">How I decide what “done” means.</h2>
-			</div>
-
-			<div class="principles-grid">
-				<article class="surface">
-					<span>01 / Reproducibility</span>
-					<h3>Recovery should be executable.</h3>
-					<p>
-						If a system cannot be reconstructed predictably, its
-						recovery process is incomplete.
-					</p>
-				</article>
-				<article class="surface">
-					<span>02 / Observability</span>
-					<h3>Healthy-looking is not enough.</h3>
-					<p>
-						System behavior and failure signals need to be visible
-						before a decision can be trusted.
-					</p>
-				</article>
-				<article class="surface">
-					<span>03 / Documentation</span>
-					<h3>Knowledge should survive handoff.</h3>
-					<p>
-						Architecture decisions, procedures, and incident lessons
-						should outlive the person who found them.
-					</p>
-				</article>
-				<article class="surface">
-					<span>04 / Validation</span>
-					<h3>Trust follows testing.</h3>
-					<p>
-						Backups, automation, and high availability become
-						credible only after the failure path is exercised.
-					</p>
-				</article>
-			</div>
-		</section>
-
-		<section class="toolkit-section" aria-labelledby="toolkit-title">
-			<div class="section-heading">
-				<p class="eyebrow">Working toolkit</p>
-				<h2 id="toolkit-title">Technologies I use to build and operate.</h2>
-			</div>
-
-			<div class="toolkit surface">
-				<div>
-					<span>Systems</span>
-					<ul class="tag-list">
-						<li class="tag">Linux</li>
-						<li class="tag">Proxmox</li>
-						<li class="tag">Networking</li>
-						<li class="tag">Containerd</li>
-					</ul>
-				</div>
-				<div>
-					<span>Automation</span>
-					<ul class="tag-list">
-						<li class="tag">Terraform</li>
-						<li class="tag">Ansible</li>
-						<li class="tag">GitHub Actions</li>
-						<li class="tag">Python</li>
-					</ul>
-				</div>
-				<div>
-					<span>Platform</span>
-					<ul class="tag-list">
-						<li class="tag">Kubernetes</li>
-						<li class="tag">Cilium</li>
-						<li class="tag">Flux</li>
-						<li class="tag">Traefik</li>
-					</ul>
-				</div>
-				<div>
-					<span>Reliability</span>
-					<ul class="tag-list">
-						<li class="tag">Prometheus</li>
-						<li class="tag">Grafana</li>
-						<li class="tag">Runbooks</li>
-						<li class="tag">Failure testing</li>
-					</ul>
-				</div>
-			</div>
-		</section>
-
-		<section class="direction surface" aria-labelledby="direction-title">
+		<section class="section split-section" aria-labelledby="experience-title">
 			<div>
-				<p class="eyebrow">What comes next</p>
-				<h2 id="direction-title">Building toward platform and site reliability engineering.</h2>
+				<p class="eyebrow">Professional experience</p>
+				<h2 id="experience-title">Reliability is part technical work and part operating discipline.</h2>
+			</div>
+			<div class="body-copy">
 				<p>
-					This site documents that progression honestly: the
-					architecture, implementation, failures, recoveries, and
-					decisions behind the finished systems.
+					My field work includes system upgrades, lab validation,
+					troubleshooting, documentation, and coordination across
+					technical teams and customer environments.
+				</p>
+				<p>
+					Working around mission-critical systems has made preparation
+					and verification non-negotiable: understand the dependencies,
+					document the change, validate the result, and know how to
+					recover if the expected path fails.
+				</p>
+				<ul class="plain-list">
+					<li>
+						<strong>Implementation and upgrades</strong>
+						Plan and execute technical work against live operational constraints.
+					</li>
+					<li>
+						<strong>Lab validation and troubleshooting</strong>
+						Reproduce issues, test changes, and verify behavior before handoff.
+					</li>
+					<li>
+						<strong>Documentation and coordination</strong>
+						Make procedures understandable across teams and support repeatable execution.
+					</li>
+				</ul>
+			</div>
+		</section>
+
+		<section class="section split-section" aria-labelledby="lab-title">
+			<div>
+				<p class="eyebrow">Engineering lab</p>
+				<h2 id="lab-title">A place to practice the complete platform lifecycle.</h2>
+			</div>
+			<div class="body-copy">
+				<p>
+					My primary project is a three-node Kubernetes platform on
+					Proxmox. It is designed for infrastructure engineering work:
+					provisioning, configuration, hardening, application delivery,
+					observability, and recovery.
+				</p>
+				<p>
+					The environment is managed with Terraform, Ansible, and Flux.
+					That gives me a repeatable place to study systems at the point
+					where tools, processes, and operational tradeoffs meet.
+				</p>
+				<div class="button-row">
+					<a
+						class="button button-secondary"
+						href={HOMELAB_REPOSITORY_URL}
+						target="_blank"
+						rel="noreferrer"
+					>
+						Explore the homelab <span aria-hidden="true">↗</span>
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="section" aria-labelledby="strengths-title">
+			<div class="section-heading">
+				<div>
+					<p class="eyebrow">What I bring</p>
+					<h2 id="strengths-title">A bridge between operations and platform engineering.</h2>
+				</div>
+			</div>
+
+			<div class="card-grid">
+				<article class="card">
+					<span class="card-number">01</span>
+					<h3>Operational context</h3>
+					<p>
+						Experience working around systems where change planning,
+						availability, and recovery have real consequences.
+					</p>
+				</article>
+				<article class="card">
+					<span class="card-number">02</span>
+					<h3>Systems thinking</h3>
+					<p>
+						A habit of tracing dependencies across networking,
+						compute, Linux, Kubernetes, and application delivery.
+					</p>
+				</article>
+				<article class="card">
+					<span class="card-number">03</span>
+					<h3>Clear communication</h3>
+					<p>
+						Documentation and technical explanations written for
+						people who need to execute and maintain the work.
+					</p>
+				</article>
+			</div>
+		</section>
+
+		<section class="section split-section" aria-labelledby="toolkit-title">
+			<div>
+				<p class="eyebrow">Working toolkit</p>
+				<h2 id="toolkit-title">Technologies I use and continue to deepen.</h2>
+			</div>
+			<dl class="stack-table">
+				<div>
+					<dt>Systems</dt>
+					<dd>Linux · Proxmox · Networking · containerd</dd>
+				</div>
+				<div>
+					<dt>Automation</dt>
+					<dd>Terraform · Ansible · GitHub Actions · Python</dd>
+				</div>
+				<div>
+					<dt>Platform</dt>
+					<dd>Kubernetes · Cilium · Flux · Traefik</dd>
+				</div>
+				<div>
+					<dt>Reliability</dt>
+					<dd>Prometheus · Grafana · runbooks · failure testing</dd>
+				</div>
+				<div>
+					<dt>Security</dt>
+					<dd>SOPS · age · External Secrets · YubiKey</dd>
+				</div>
+			</dl>
+		</section>
+
+		<section class="cta">
+			<div>
+				<h2>Building toward platform, DevOps, and SRE roles.</h2>
+				<p>
+					I’m documenting the architecture, implementation, failures,
+					and recoveries so the work can be evaluated on evidence.
 				</p>
 			</div>
-			<div class="direction-actions">
+			<div class="button-row">
 				<a class="button button-primary" href="/projects">View my work</a>
 				<a
 					class="button button-secondary"
@@ -227,297 +191,9 @@ const description =
 					target="_blank"
 					rel="noreferrer"
 				>
-					GitHub profile
-					<span aria-hidden="true">↗</span>
+					GitHub profile <span aria-hidden="true">↗</span>
 				</a>
 			</div>
 		</section>
 	</main>
 </BaseLayout>
-
-<style>
-	.about-hero {
-		display: grid;
-		grid-template-columns: minmax(0, 1.35fr) minmax(18rem, 0.65fr);
-		gap: clamp(3rem, 8vw, 7rem);
-		align-items: end;
-		margin-bottom: clamp(5rem, 10vw, 8rem);
-	}
-
-	.about-intro h1 {
-		max-width: 12ch;
-		margin-top: 1rem;
-	}
-
-	.about-intro .lede {
-		max-width: 43rem;
-		margin-top: 1.5rem;
-		font-size: clamp(1.08rem, 2vw, 1.25rem);
-	}
-
-	.profile-card {
-		padding: 1.25rem;
-	}
-
-	.profile-mark {
-		display: grid;
-		width: 4rem;
-		height: 4rem;
-		margin-bottom: 2rem;
-		place-items: center;
-		border: 1px solid var(--color-accent-border);
-		border-radius: 1rem;
-		background: var(--color-accent-soft);
-		color: var(--color-accent);
-		font-family: var(--font-mono);
-		font-weight: 700;
-	}
-
-	.profile-card dl {
-		margin: 0;
-	}
-
-	.profile-card dl div {
-		padding: 0.8rem 0;
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	.profile-card dl div:last-child {
-		border-bottom: 0;
-	}
-
-	.profile-card dt {
-		color: var(--color-text-subtle);
-		font-family: var(--font-mono);
-		font-size: 0.64rem;
-		letter-spacing: 0.07em;
-		text-transform: uppercase;
-	}
-
-	.profile-card dd {
-		margin: 0.15rem 0 0;
-		color: var(--color-text);
-		font-size: 0.88rem;
-		font-weight: 700;
-	}
-
-	.story-section {
-		display: grid;
-		grid-template-columns: minmax(10rem, 0.4fr) minmax(0, 1.6fr);
-		gap: clamp(2rem, 8vw, 7rem);
-		padding-block: clamp(4rem, 8vw, 6rem);
-		border-top: 1px solid var(--color-border);
-	}
-
-	.section-index span,
-	.section-index p {
-		font-family: var(--font-mono);
-		font-size: 0.68rem;
-	}
-
-	.section-index span {
-		color: var(--color-accent);
-	}
-
-	.section-index p {
-		margin-top: 0.35rem;
-		color: var(--color-text-subtle);
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.story-copy {
-		max-width: 48rem;
-	}
-
-	.story-copy h2 {
-		max-width: 17ch;
-		margin-bottom: 1.4rem;
-	}
-
-	.story-copy > p {
-		font-size: 1.02rem;
-	}
-
-	.lab-stack {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 0.7rem;
-		margin: 2rem 0;
-	}
-
-	.lab-stack article {
-		padding: 1rem;
-		border: 1px solid var(--color-border);
-		border-radius: 0.75rem;
-		background: rgba(17, 27, 36, 0.58);
-	}
-
-	.lab-stack span,
-	.lab-stack strong {
-		display: block;
-	}
-
-	.lab-stack span {
-		margin-bottom: 0.5rem;
-		color: var(--color-accent);
-		font-family: var(--font-mono);
-		font-size: 0.62rem;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-	}
-
-	.lab-stack strong {
-		font-size: 0.86rem;
-		line-height: 1.45;
-	}
-
-	.principles-section,
-	.toolkit-section,
-	.direction {
-		margin-top: clamp(5rem, 10vw, 8rem);
-	}
-
-	.section-heading {
-		max-width: 45rem;
-		margin-bottom: 2.5rem;
-	}
-
-	.section-heading h2 {
-		margin-top: 0.9rem;
-	}
-
-	.principles-grid {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		gap: 1rem;
-	}
-
-	.principles-grid article {
-		padding: 1.5rem;
-	}
-
-	.principles-grid article > span {
-		display: block;
-		margin-bottom: 3rem;
-		color: var(--color-accent);
-		font-family: var(--font-mono);
-		font-size: 0.64rem;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-	}
-
-	.principles-grid h3 {
-		margin-bottom: 0.7rem;
-	}
-
-	.principles-grid p {
-		margin: 0;
-		font-size: 0.9rem;
-	}
-
-	.toolkit {
-		display: grid;
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		padding: 0.5rem 1.5rem;
-	}
-
-	.toolkit > div {
-		padding: 1.5rem 1.5rem 1.5rem 0;
-		border-bottom: 1px solid var(--color-border);
-	}
-
-	.toolkit > div:nth-child(odd) {
-		border-right: 1px solid var(--color-border);
-	}
-
-	.toolkit > div:nth-child(even) {
-		padding-right: 0;
-		padding-left: 1.5rem;
-	}
-
-	.toolkit > div:nth-last-child(-n + 2) {
-		border-bottom: 0;
-	}
-
-	.toolkit > div > span {
-		display: block;
-		margin-bottom: 0.8rem;
-		color: var(--color-text-subtle);
-		font-family: var(--font-mono);
-		font-size: 0.65rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-
-	.direction {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 3rem;
-		padding: clamp(1.5rem, 5vw, 3rem);
-	}
-
-	.direction h2 {
-		max-width: 18ch;
-		margin-top: 0.9rem;
-		font-size: clamp(1.8rem, 4vw, 2.8rem);
-	}
-
-	.direction h2 + p {
-		max-width: 42rem;
-		margin-top: 1rem;
-	}
-
-	.direction-actions {
-		display: flex;
-		flex: 0 0 auto;
-		flex-wrap: wrap;
-		gap: 0.75rem;
-	}
-
-	@media (max-width: 900px) {
-		.about-hero {
-			grid-template-columns: 1fr;
-		}
-
-		.profile-card {
-			max-width: 30rem;
-		}
-
-		.direction {
-			align-items: flex-start;
-			flex-direction: column;
-		}
-	}
-
-	@media (max-width: 720px) {
-		.story-section {
-			grid-template-columns: 1fr;
-			gap: 1.5rem;
-		}
-
-		.lab-stack,
-		.principles-grid,
-		.toolkit {
-			grid-template-columns: 1fr;
-		}
-
-		.toolkit > div,
-		.toolkit > div:nth-child(odd),
-		.toolkit > div:nth-child(even) {
-			padding: 1.2rem 0;
-			border-right: 0;
-			border-bottom: 1px solid var(--color-border);
-		}
-
-		.toolkit > div:nth-last-child(2) {
-			border-bottom: 1px solid var(--color-border);
-		}
-
-		.direction-actions,
-		.direction-actions .button {
-			width: 100%;
-		}
-	}
-</style>

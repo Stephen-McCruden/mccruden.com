@@ -6,52 +6,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 	title="Page not found"
 	description="The requested page could not be found on mccruden.com."
 >
-	<main class="not-found">
+	<main id="main-content" class="not-found">
 		<div class="container">
-			<p class="eyebrow">Error 404</p>
-			<h1>This route went missing.</h1>
+			<p class="eyebrow">404</p>
+			<h1>Page not found.</h1>
 			<p class="lede">
-				The page may have moved, or the address may be incorrect. The rest of the
-				system is operating normally.
+				The address may be incorrect, or the page may have moved.
 			</p>
-			<div class="actions">
+			<div class="button-row">
 				<a class="button button-primary" href="/">Return home</a>
-				<a class="button button-secondary" href="/projects/">View projects</a>
+				<a class="button button-secondary" href="/projects">View projects</a>
 			</div>
 		</div>
 	</main>
 </BaseLayout>
-
-<style>
-	.not-found {
-		display: grid;
-		min-height: calc(100svh - 16rem);
-		place-items: center;
-		padding-block: clamp(5rem, 14vw, 10rem);
-		text-align: center;
-	}
-
-	.not-found .container {
-		max-width: 52rem;
-	}
-
-	h1 {
-		margin: 0.6rem 0 1.25rem;
-		font-size: clamp(3.25rem, 10vw, 7.5rem);
-		line-height: 0.92;
-		letter-spacing: -0.065em;
-	}
-
-	.lede {
-		max-width: 42rem;
-		margin-inline: auto;
-	}
-
-	.actions {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-		gap: 0.8rem;
-		margin-top: 2rem;
-	}
-</style>

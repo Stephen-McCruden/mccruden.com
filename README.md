@@ -2,55 +2,64 @@
 
 Stephen McCruden's infrastructure engineering portfolio and technical blog.
 
-The site is built with Astro, published as an unprivileged NGINX container to
-GHCR, and deployed to Kubernetes through Flux.
+The site is built with Astro, packaged as an unprivileged NGINX container, and
+deployed to Kubernetes through GitHub Actions and Flux.
 
 ## Local development
 
 Requires Node.js 22.12 or newer.
 
-```sh
+```bash
 npm ci
 npm run dev
 ```
 
-The local site is available at `http://localhost:4321`.
+Create the production build with:
 
-Create a production build with:
-
-```sh
+```bash
 npm run build
-npm run preview
 ```
 
 ## Writing
 
-Posts are Markdown files in `src/content/blog`. Copy `_template.md` to a
-descriptive filename, fill in the frontmatter, and write the post in Obsidian
-or any Markdown editor.
-
-Keep `draft: true` while writing. Drafts are excluded from the site and RSS
-feed. Set `draft: false`, run a local build, and open a pull request when the
-post is ready to publish.
-
-## Container publishing
-
-Pushes to `main` and feature branches publish immutable images to:
+Posts are ordinary Markdown files under `src/content/blog/`. Copy
+`_template.md`, rename it with a descriptive slug, and write in Obsidian or any
+Markdown editor.
 
 ```text
-ghcr.io/stephen-mccruden/mccruden.com
+src/content/blog/rebuilding-kubernetes-from-code.md
 ```
 
-Each image receives a commit SHA tag. The default branch also receives
-`latest`. Kubernetes deployments should remain pinned to an immutable digest.
+Keep `draft: true` while writing. Set `draft: false` when the article should be
+included in the generated site.
 
-## Deployment environments
+## Automated environments
 
-- `preview.mccruden.com` is the staging environment for branch builds and
-  design review.
-- `mccruden.com` will be the public production environment promoted from
-  `main`.
+Every non-`main` branch publishes to the fixed preview environment. The
+`main` branch publishes to production.
 
-Infrastructure manifests live separately in the
-[`Stephen-McCruden/homelab`](https://github.com/Stephen-McCruden/homelab)
-repository.
+| Git branch | Image channel | Website |
+|---|---|---|
+| Any non-`main` branch | `preview-<run>-<commit>` | `preview.mccruden.com` |
+| `main` | `production-<run>-<commit>` | `mccruden.com` |
+
+GitHub Actions builds the container and publishes a unique image tag to GHCR.
+Flux selects that channel's newest image, records its immutable digest in the
+homelab Git repository, and rolls out the corresponding Kubernetes Deployment.
+
+No routine Docker command, digest lookup, Kubernetes edit, or Flux
+reconciliation is required.
+
+See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the complete preview,
+production, verification, and rollback procedure.
+
+## Runtime design
+
+- multi-stage container build
+- unprivileged NGINX runtime
+- read-only Kubernetes root filesystem
+- separate preview and production Deployments
+- immutable image digest deployment
+- rolling updates with health probes
+- Git history for every release
+- no database or persistent volume

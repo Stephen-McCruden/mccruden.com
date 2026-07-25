@@ -3,12 +3,23 @@ name: Publish container
 on:
   push:
     branches:
-      - main
-      - 'feat/**'
+      - '**'
+    paths:
+      - '.github/workflows/publish-container.yaml'
+      - 'src/**'
+      - 'public/**'
+      - 'nginx/**'
+      - 'Dockerfile'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'astro.config.mjs'
+      - 'tsconfig.json'
   workflow_dispatch:
 
 concurrency:
-  group: publish-container-${{ github.ref }}
+  # There is one fixed preview environment and one production environment.
+  # A newer push supersedes an older in-flight build for the same channel.
+  group: publish-container-${{ github.ref == 'refs/heads/main' && 'production' || 'preview' }}
   cancel-in-progress: true
 
 env:
@@ -46,12 +57,14 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
+            type=raw,value=production-${{ github.run_id }}-${{ github.sha }},enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=preview-${{ github.run_id }}-${{ github.sha }},enable=${{ github.ref != 'refs/heads/main' }}
             type=sha,format=long,prefix=sha-
-            type=ref,event=branch
             type=raw,value=latest,enable={{is_default_branch}}
           labels: |
             org.opencontainers.image.title=mccruden.com
             org.opencontainers.image.description=Stephen McCruden's infrastructure engineering portfolio and blog
+            org.opencontainers.image.revision=${{ github.sha }}
 
       - name: Build and publish image
         id: build
