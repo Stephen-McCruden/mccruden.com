@@ -1,63 +1,237 @@
 ---
-import AboutHeroImage from '../assets/blog-placeholder-about.jpg';
-import Layout from '../layouts/BlogPost.astro';
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+
+const description =
+	'About Stephen McCruden: field engineering, Kubernetes, infrastructure automation, observability, and reliable systems.';
 ---
 
-<Layout
-	title="About Me"
-	description="Lorem ipsum dolor sit amet"
-	pubDate={new Date('August 08 2021')}
-	heroImage={AboutHeroImage}
->
-	<p>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
-		labore et dolore magna aliqua. Vitae ultricies leo integer malesuada nunc vel risus commodo
-		viverra. Adipiscing enim eu turpis egestas pretium. Euismod elementum nisi quis eleifend quam
-		adipiscing. In hac habitasse platea dictumst vestibulum. Sagittis purus sit amet volutpat. Netus
-		et malesuada fames ac turpis egestas. Eget magna fermentum iaculis eu non diam phasellus
-		vestibulum lorem. Varius sit amet mattis vulputate enim. Habitasse platea dictumst quisque
-		sagittis. Integer quis auctor elit sed vulputate mi. Dictumst quisque sagittis purus sit amet.
-	</p>
+<!doctype html>
+<html lang="en">
+	<head>
+		<BaseHead title={`About | ${SITE_TITLE}`} description={description} />
+	</head>
 
-	<p>
-		Morbi tristique senectus et netus. Id semper risus in hendrerit gravida rutrum quisque non
-		tellus. Habitasse platea dictumst quisque sagittis purus sit amet. Tellus molestie nunc non
-		blandit massa. Cursus vitae congue mauris rhoncus. Accumsan tortor posuere ac ut. Fringilla urna
-		porttitor rhoncus dolor. Elit ullamcorper dignissim cras tincidunt lobortis. In cursus turpis
-		massa tincidunt dui ut ornare lectus. Integer feugiat scelerisque varius morbi enim nunc.
-		Bibendum neque egestas congue quisque egestas diam. Cras ornare arcu dui vivamus arcu felis
-		bibendum. Dignissim suspendisse in est ante in nibh mauris. Sed tempus urna et pharetra pharetra
-		massa massa ultricies mi.
-	</p>
+	<body>
+		<Header />
 
-	<p>
-		Mollis nunc sed id semper risus in. Convallis a cras semper auctor neque. Diam sit amet nisl
-		suscipit. Lacus viverra vitae congue eu consequat ac felis donec. Egestas integer eget aliquet
-		nibh praesent tristique magna sit amet. Eget magna fermentum iaculis eu non diam. In vitae
-		turpis massa sed elementum. Tristique et egestas quis ipsum suspendisse ultrices. Eget lorem
-		dolor sed viverra ipsum. Vel turpis nunc eget lorem dolor sed viverra. Posuere ac ut consequat
-		semper viverra nam. Laoreet suspendisse interdum consectetur libero id faucibus. Diam phasellus
-		vestibulum lorem sed risus ultricies tristique. Rhoncus dolor purus non enim praesent elementum
-		facilisis. Ultrices tincidunt arcu non sodales neque. Tempus egestas sed sed risus pretium quam
-		vulputate. Viverra suspendisse potenti nullam ac tortor vitae purus faucibus ornare. Fringilla
-		urna porttitor rhoncus dolor purus non. Amet dictum sit amet justo donec enim.
-	</p>
+		<main>
+			<header class="introduction">
+				<p class="eyebrow">About me</p>
 
-	<p>
-		Mattis ullamcorper velit sed ullamcorper morbi tincidunt. Tortor posuere ac ut consequat semper
-		viverra. Tellus mauris a diam maecenas sed enim ut sem viverra. Venenatis urna cursus eget nunc
-		scelerisque viverra mauris in. Arcu ac tortor dignissim convallis aenean et tortor at. Curabitur
-		gravida arcu ac tortor dignissim convallis aenean et tortor. Egestas tellus rutrum tellus
-		pellentesque eu. Fusce ut placerat orci nulla pellentesque dignissim enim sit amet. Ut enim
-		blandit volutpat maecenas volutpat blandit aliquam etiam. Id donec ultrices tincidunt arcu. Id
-		cursus metus aliquam eleifend mi.
-	</p>
+				<h1>I’m Stephen McCruden.</h1>
 
-	<p>
-		Tempus quam pellentesque nec nam aliquam sem. Risus at ultrices mi tempus imperdiet. Id porta
-		nibh venenatis cras sed felis eget velit. Ipsum a arcu cursus vitae. Facilisis magna etiam
-		tempor orci eu lobortis elementum. Tincidunt dui ut ornare lectus sit. Quisque non tellus orci
-		ac. Blandit libero volutpat sed cras. Nec tincidunt praesent semper feugiat nibh sed pulvinar
-		proin gravida. Egestas integer eget aliquet nibh praesent tristique magna.
-	</p>
-</Layout>
+				<p class="lede">
+					I’m a field engineer focused on reliable infrastructure, automation,
+					and the operational work required to keep important systems running.
+				</p>
+			</header>
+
+			<section aria-labelledby="professional-work">
+				<h2 id="professional-work">Professional work</h2>
+
+				<p>
+					I support mission-critical public-safety communications infrastructure.
+					My work includes system upgrades, lab validation, troubleshooting,
+					documentation, and coordinating technical work across teams and customer
+					environments.
+				</p>
+
+				<p>
+					Working on systems where reliability matters has shaped how I approach
+					engineering: understand the dependencies, document the procedure, validate
+					the result, and prepare for what happens when something fails.
+				</p>
+			</section>
+
+			<section aria-labelledby="homelab">
+				<h2 id="homelab">The homelab</h2>
+
+				<p>
+					My primary engineering project is a three-node Kubernetes platform running
+					on Proxmox. It is designed as a reproducible environment for learning and
+					practicing infrastructure engineering—not simply as a collection of
+					self-hosted applications.
+				</p>
+
+				<ul>
+					<li>Terraform provisions the virtual infrastructure.</li>
+					<li>Ansible configures and hardens the operating systems.</li>
+					<li>Flux manages Kubernetes resources through GitOps.</li>
+					<li>Cilium provides cluster networking and policy enforcement.</li>
+					<li>Prometheus and Grafana provide metrics and visibility.</li>
+					<li>Rebuilds and failure tests validate the platform’s design.</li>
+				</ul>
+
+				<p>
+					The entire cluster has been destroyed and rebuilt without undocumented
+					manual intervention. The next stages include persistent storage,
+					centralized logging, disaster-recovery testing, and additional stateless
+					applications.
+				</p>
+			</section>
+
+			<section aria-labelledby="approach">
+				<h2 id="approach">How I approach engineering</h2>
+
+				<div class="principles">
+					<article>
+						<h3>Reproducibility</h3>
+						<p>
+							If a system cannot be reconstructed predictably, its recovery
+							process is incomplete.
+						</p>
+					</article>
+
+					<article>
+						<h3>Observability</h3>
+						<p>
+							A healthy-looking system is not enough. Its behavior and failure
+							signals need to be visible.
+						</p>
+					</article>
+
+					<article>
+						<h3>Documentation</h3>
+						<p>
+							Architecture decisions, procedures, incidents, and lessons should
+							outlive the person who discovered them.
+						</p>
+					</article>
+
+					<article>
+						<h3>Failure testing</h3>
+						<p>
+							Backups, automation, and high availability only become trustworthy
+							after they have been tested.
+						</p>
+					</article>
+				</div>
+			</section>
+
+			<section aria-labelledby="direction">
+				<h2 id="direction">Where I’m headed</h2>
+
+				<p>
+					I’m building toward site reliability, platform, and infrastructure
+					engineering roles. This site is where I document that work openly:
+					the architecture, implementation, failures, recoveries, and decisions
+					behind the finished systems.
+				</p>
+
+				<div class="actions">
+					<a class="button primary" href="/blog">Read the blog</a>
+
+					<a
+						class="button secondary"
+						href="https://github.com/Stephen-McCruden"
+						target="_blank"
+						rel="noreferrer"
+					>
+						View my GitHub
+						<span aria-hidden="true">↗</span>
+					</a>
+				</div>
+			</section>
+		</main>
+
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.introduction {
+		padding: 2rem 0 4rem;
+	}
+
+	.eyebrow {
+		margin-bottom: 0.75rem;
+		color: var(--accent-dark);
+		font-size: 0.85rem;
+		font-weight: 700;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.introduction h1 {
+		font-size: clamp(2.5rem, 7vw, 4.5rem);
+		letter-spacing: -0.04em;
+	}
+
+	.lede {
+		max-width: 62ch;
+		font-size: 1.15rem;
+	}
+
+	main > section {
+		padding: 3rem 0;
+		border-top: 1px solid rgb(var(--gray-light));
+	}
+
+	main > section h2 {
+		font-size: 2rem;
+	}
+
+	.principles {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1.5rem;
+	}
+
+	.principles article {
+		padding: 1.5rem;
+		border: 1px solid rgb(var(--gray-light));
+		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.65);
+	}
+
+	.principles h3 {
+		font-size: 1.35rem;
+	}
+
+	.principles p {
+		margin-bottom: 0;
+	}
+
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2rem;
+	}
+
+	.button {
+		display: inline-block;
+		padding: 0.65rem 1rem;
+		border: 2px solid var(--accent);
+		border-radius: 6px;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.primary {
+		background: var(--accent);
+		color: white;
+	}
+
+	.primary:hover {
+		background: var(--accent-dark);
+		color: white;
+	}
+
+	.secondary {
+		background: white;
+	}
+
+	@media (max-width: 720px) {
+		.introduction {
+			padding-top: 1rem;
+		}
+
+		.principles {
+			grid-template-columns: 1fr;
+		}
+	}
+</style>
