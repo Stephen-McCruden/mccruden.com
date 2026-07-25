@@ -1,114 +1,467 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
 import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import { SITE_TITLE } from '../../consts';
+import BaseLayout from '../../layouts/BaseLayout.astro';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const description =
+	'Engineering notes, build logs, incident reviews, and infrastructure lessons from Stephen McCruden.';
+
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.draft)
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
-<!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
-			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
-			}
-			ul li {
-				width: calc(50% - 1rem);
-			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
-			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
-			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
+<BaseLayout title={`Writing | ${SITE_TITLE}`} description={description}>
+	<main id="main-content" class="page">
+		<header class="page-header">
+			<p class="eyebrow">Engineering notebook</p>
+			<h1>Writing about the work behind reliable systems.</h1>
+			<p class="lede">
+				Build logs, architecture decisions, incident reviews, and
+				practical notes from operating a Kubernetes homelab and working
+				around mission-critical infrastructure.
+			</p>
+		</header>
+
+		<div class="blog-toolbar">
+			<p>
+				<span>{posts.length.toString().padStart(2, '0')}</span>
+				{posts.length === 1 ? 'published note' : 'published notes'}
+			</p>
+			<a href="/rss.xml">
+				RSS feed
+				<svg viewBox="0 0 24 24" aria-hidden="true">
+					<path d="M5 11a8 8 0 0 1 8 8M5 5a14 14 0 0 1 14 14" />
+					<circle cx="6" cy="18" r="1" />
+				</svg>
+			</a>
+		</div>
+
+		{
+			posts.length > 0 ? (
+				<section class="posts-grid" aria-label="Published articles">
+					{posts.map((post, index) => (
+						<article class:list={['post-card', 'surface', { featured: index === 0 }]}>
+							<a class="card-link" href={`/blog/${post.id}/`} aria-label={`Read ${post.data.title}`}>
+								{post.data.heroImage ? (
+									<div class="post-image">
+										<Image
+											width={960}
+											height={540}
+											src={post.data.heroImage}
+											alt=""
+										/>
+									</div>
+								) : (
+									<div class="post-graphic" aria-hidden="true">
+										<span>{String(index + 1).padStart(2, '0')}</span>
+										<div></div>
+									</div>
+								)}
+
+								<div class="post-content">
+									<div class="post-meta">
+										<p>{post.data.tags[0] ?? 'Engineering note'}</p>
 										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
+									</div>
+									<h2>{post.data.title}</h2>
+									<p class="post-description">{post.data.description}</p>
+									<span class="read-link">
+										Read article <span aria-hidden="true">→</span>
+									</span>
+								</div>
+							</a>
+						</article>
+					))}
+				</section>
+			) : (
+				<section class="empty-state surface" aria-labelledby="empty-title">
+					<div class="empty-copy">
+						<p class="empty-status">
+							<span aria-hidden="true"></span>
+							Editorial pipeline active
+						</p>
+						<h2 id="empty-title">The first field notes are being prepared.</h2>
+						<p>
+							I’m building a writing workflow around Obsidian,
+							Markdown, Git, and Astro. The first articles will
+							document the infrastructure as it evolves—including
+							the failures and tradeoffs that polished project pages
+							usually leave out.
+						</p>
+					</div>
+
+					<div class="topic-list">
+						<p>Topics in the queue</p>
+						<ul>
+							<li>
+								<span>01</span>
+								Rebuilding Kubernetes from infrastructure as code
 							</li>
-						))
-					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
-</html>
+							<li>
+								<span>02</span>
+								Designing dependency-aware Flux reconciliation
+							</li>
+							<li>
+								<span>03</span>
+								Failure testing, recovery, and postmortems
+							</li>
+							<li>
+								<span>04</span>
+								Observability that answers operational questions
+							</li>
+						</ul>
+					</div>
+				</section>
+			)
+		}
+
+		<section class="writing-principles" aria-labelledby="writing-principles-title">
+			<div>
+				<p class="eyebrow">Editorial approach</p>
+				<h2 id="writing-principles-title">Useful enough to operate from.</h2>
+			</div>
+			<div class="principle-list">
+				<article>
+					<span>Context</span>
+					<p>What the system needed to accomplish and why it was designed that way.</p>
+				</article>
+				<article>
+					<span>Evidence</span>
+					<p>Commands, measurements, and validation—not just the final architecture.</p>
+				</article>
+				<article>
+					<span>Lessons</span>
+					<p>What failed, what changed, and what I would do differently next time.</p>
+				</article>
+			</div>
+		</section>
+	</main>
+</BaseLayout>
+
+<style>
+	.blog-toolbar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding-block: 1rem;
+		border-block: 1px solid var(--color-border);
+	}
+
+	.blog-toolbar p,
+	.blog-toolbar a {
+		margin: 0;
+		font-family: var(--font-mono);
+		font-size: 0.67rem;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.blog-toolbar p {
+		color: var(--color-text-subtle);
+	}
+
+	.blog-toolbar p span {
+		margin-right: 0.55rem;
+		color: var(--color-accent);
+	}
+
+	.blog-toolbar a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		text-decoration: none;
+	}
+
+	.blog-toolbar svg {
+		width: 0.9rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-width: 1.7;
+	}
+
+	.posts-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 1rem;
+		margin-top: 2rem;
+	}
+
+	.post-card {
+		overflow: hidden;
+	}
+
+	.post-card.featured {
+		grid-column: 1 / -1;
+	}
+
+	.card-link {
+		display: grid;
+		height: 100%;
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.featured .card-link {
+		grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.85fr);
+	}
+
+	.post-image,
+	.post-graphic {
+		min-height: 14rem;
+		border-bottom: 1px solid var(--color-border);
+		overflow: hidden;
+	}
+
+	.featured .post-image,
+	.featured .post-graphic {
+		border-right: 1px solid var(--color-border);
+		border-bottom: 0;
+	}
+
+	.post-image img {
+		width: 100%;
+		height: 100%;
+		border-radius: 0;
+		object-fit: cover;
+		transition: transform 300ms ease;
+	}
+
+	.card-link:hover .post-image img {
+		transform: scale(1.025);
+	}
+
+	.post-graphic {
+		position: relative;
+		display: flex;
+		align-items: flex-end;
+		padding: 1.5rem;
+		background:
+			linear-gradient(rgba(45, 212, 191, 0.04) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(45, 212, 191, 0.04) 1px, transparent 1px),
+			linear-gradient(145deg, rgba(45, 212, 191, 0.09), transparent 65%),
+			rgba(8, 13, 18, 0.72);
+		background-size: 28px 28px, 28px 28px, auto, auto;
+	}
+
+	.post-graphic span {
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-size: 0.75rem;
+	}
+
+	.post-graphic div {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 7rem;
+		height: 7rem;
+		border: 1px solid var(--color-accent-border);
+		border-radius: 1.5rem;
+		box-shadow:
+			0 0 0 1.2rem rgba(45, 212, 191, 0.025),
+			0 0 0 2.4rem rgba(45, 212, 191, 0.015);
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	.post-content {
+		display: flex;
+		flex-direction: column;
+		padding: 1.5rem;
+	}
+
+	.post-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		margin-bottom: 2rem;
+		color: var(--color-text-subtle);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		text-transform: uppercase;
+	}
+
+	.post-meta p {
+		margin: 0;
+		color: var(--color-accent);
+		font: inherit;
+	}
+
+	.post-card h2 {
+		font-size: clamp(1.4rem, 3vw, 2rem);
+		transition: color 160ms ease;
+	}
+
+	.card-link:hover h2 {
+		color: var(--color-accent-strong);
+	}
+
+	.post-description {
+		margin-top: 0.8rem;
+		font-size: 0.9rem;
+	}
+
+	.read-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.4rem;
+		margin-top: auto;
+		padding-top: 1.5rem;
+		color: var(--color-accent);
+		font-size: 0.82rem;
+		font-weight: 700;
+	}
+
+	.empty-state {
+		display: grid;
+		grid-template-columns: minmax(0, 1.1fr) minmax(20rem, 0.9fr);
+		gap: clamp(2rem, 7vw, 6rem);
+		margin-top: 2rem;
+		padding: clamp(1.5rem, 5vw, 3.5rem);
+	}
+
+	.empty-status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		margin-bottom: 2rem;
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.empty-status span {
+		width: 0.42rem;
+		height: 0.42rem;
+		border-radius: 999px;
+		background: var(--color-accent);
+		box-shadow: 0 0 0 0.23rem rgba(45, 212, 191, 0.1);
+	}
+
+	.empty-copy h2 {
+		max-width: 17ch;
+	}
+
+	.empty-copy h2 + p {
+		max-width: 42rem;
+		margin-top: 1.1rem;
+	}
+
+	.topic-list {
+		padding: 1.2rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		background: rgba(8, 13, 18, 0.5);
+	}
+
+	.topic-list > p {
+		margin: 0 0 0.8rem;
+		color: var(--color-text-subtle);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+	}
+
+	.topic-list ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.topic-list li {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.8rem;
+		padding: 0.8rem 0;
+		border-bottom: 1px solid var(--color-border);
+		color: var(--color-text-muted);
+		font-size: 0.8rem;
+		line-height: 1.4;
+	}
+
+	.topic-list li:last-child {
+		border-bottom: 0;
+	}
+
+	.topic-list li span {
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+	}
+
+	.writing-principles {
+		display: grid;
+		grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+		gap: clamp(3rem, 8vw, 7rem);
+		margin-top: clamp(5rem, 10vw, 8rem);
+		padding-top: clamp(4rem, 8vw, 6rem);
+		border-top: 1px solid var(--color-border);
+	}
+
+	.writing-principles h2 {
+		max-width: 12ch;
+		margin-top: 0.9rem;
+	}
+
+	.principle-list article {
+		display: grid;
+		grid-template-columns: 7rem 1fr;
+		gap: 1rem;
+		padding: 1.3rem 0;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.principle-list article:first-child {
+		padding-top: 0;
+	}
+
+	.principle-list span {
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-size: 0.66rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.principle-list p {
+		margin: 0;
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 850px) {
+		.featured .card-link,
+		.empty-state,
+		.writing-principles {
+			grid-template-columns: 1fr;
+		}
+
+		.featured .post-image,
+		.featured .post-graphic {
+			border-right: 0;
+			border-bottom: 1px solid var(--color-border);
+		}
+	}
+
+	@media (max-width: 720px) {
+		.posts-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.post-card.featured {
+			grid-column: auto;
+		}
+
+		.principle-list article {
+			grid-template-columns: 1fr;
+			gap: 0.4rem;
+		}
+	}
+</style>

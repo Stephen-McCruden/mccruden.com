@@ -1,63 +1,56 @@
-# Astro Starter Kit: Blog
+# mccruden.com
+
+Stephen McCruden's infrastructure engineering portfolio and technical blog.
+
+The site is built with Astro, published as an unprivileged NGINX container to
+GHCR, and deployed to Kubernetes through Flux.
+
+## Local development
+
+Requires Node.js 22.12 or newer.
 
 ```sh
-npm create astro@latest -- --template blog
+npm ci
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+The local site is available at `http://localhost:4321`.
 
-Features:
+Create a production build with:
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+```sh
+npm run build
+npm run preview
+```
 
-## 🚀 Project Structure
+## Writing
 
-Inside of your Astro project, you'll see the following folders and files:
+Posts are Markdown files in `src/content/blog`. Copy `_template.md` to a
+descriptive filename, fill in the frontmatter, and write the post in Obsidian
+or any Markdown editor.
+
+Keep `draft: true` while writing. Drafts are excluded from the site and RSS
+feed. Set `draft: false`, run a local build, and open a pull request when the
+post is ready to publish.
+
+## Container publishing
+
+Pushes to `main` and feature branches publish immutable images to:
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+ghcr.io/stephen-mccruden/mccruden.com
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Each image receives a commit SHA tag. The default branch also receives
+`latest`. Kubernetes deployments should remain pinned to an immutable digest.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Deployment environments
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+- `preview.mccruden.com` is the staging environment for branch builds and
+  design review.
+- `mccruden.com` will be the public production environment promoted from
+  `main`.
 
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+Infrastructure manifests live separately in the
+[`Stephen-McCruden/homelab`](https://github.com/Stephen-McCruden/homelab)
+repository.

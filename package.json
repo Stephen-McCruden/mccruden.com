@@ -1,5 +1,7 @@
 {
-  "name": "",
+  "name": "mccruden.com",
+  "private": true,
+  "description": "Stephen McCruden's infrastructure engineering portfolio and technical blog",
   "type": "module",
   "version": "0.0.1",
   "engines": {
