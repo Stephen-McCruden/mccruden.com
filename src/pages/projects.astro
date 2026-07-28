@@ -6,246 +6,629 @@ import {
 import BaseLayout from '../layouts/BaseLayout.astro';
 
 const description =
-	'Infrastructure projects by Stephen McCruden, including a reproducible Kubernetes homelab and automated GitOps delivery pipeline.';
+	'Infrastructure projects by Stephen McCruden, including a reproducible Kubernetes homelab and its GitOps application delivery platform.';
 ---
 
 <BaseLayout title={`Projects | ${SITE_TITLE}`} description={description}>
 	<main id="main-content" class="page">
-		<header class="page-hero">
-			<div class="page-hero-copy">
-				<p class="eyebrow">Selected work</p>
-				<h1>Infrastructure projects with the implementation left visible.</h1>
-				<p class="lede">
-					My projects are built to show how a system is provisioned,
-					configured, operated, and recovered—not only what it looks
-					like when everything is healthy.
-				</p>
-			</div>
-			<aside class="page-hero-aside">
-				<p>Project standard</p>
-				<p>
-					Version-controlled configuration, documented decisions,
-					repeatable validation, and an explicit failure path.
-				</p>
-			</aside>
+		<header class="page-header">
+			<p class="eyebrow">Selected work</p>
+			<h1>Projects built to prove the system, not just show the result.</h1>
+			<p class="lede">
+				My portfolio centers on infrastructure that can be inspected,
+				rebuilt, operated, and tested. The repository is part of the
+				deliverable: architecture, automation, procedures, and failure
+				recovery all matter.
+			</p>
 		</header>
 
-		<section class="section" aria-labelledby="homelab-title">
-			<div class="section-heading">
-				<div>
-					<p class="eyebrow">Flagship project</p>
-					<h2 id="homelab-title">Reproducible Kubernetes homelab</h2>
-					<p>
-						A three-node Proxmox environment used to practice the
-						full platform lifecycle: infrastructure as code, Linux
-						configuration, Kubernetes operations, GitOps, and
-						observability.
-					</p>
+		<section class="flagship surface" aria-labelledby="homelab-title">
+			<div class="flagship-copy">
+				<div class="project-labels">
+					<span>Flagship project</span>
+					<span>Active</span>
+				</div>
+				<h2 id="homelab-title">Reproducible Kubernetes Homelab</h2>
+				<p class="project-summary">
+					A three-node Kubernetes platform on Proxmox engineered as a
+					real operations environment. The goal is not simply to host
+					applications—it is to practice provisioning, hardening,
+					observability, recovery, and continuous reconciliation as one
+					cohesive system.
+				</p>
+
+				<div class="project-actions">
+					<a
+						class="button button-primary"
+						href={HOMELAB_REPOSITORY_URL}
+						target="_blank"
+						rel="noreferrer"
+					>
+						View the repository
+						<span aria-hidden="true">↗</span>
+					</a>
+					<a class="button button-secondary" href="/blog">
+						Read the build notes
+					</a>
 				</div>
 			</div>
 
-			<article class="feature-project">
+			<div class="project-stats" aria-label="Homelab project highlights">
 				<div>
-					<p class="project-kicker">Platform engineering</p>
-					<h3>Built to be destroyed and rebuilt with confidence.</h3>
-					<p class="project-summary">
-						Terraform defines the virtual infrastructure. Ansible
-						creates a consistent Fedora baseline and bootstraps the
-						cluster. Flux owns the desired Kubernetes state. The
-						result is an environment where the rebuild process is a
-						maintained capability rather than an emergency document.
-					</p>
-					<ul class="tag-list" aria-label="Homelab technologies">
-						<li class="tag">Proxmox</li>
-						<li class="tag">Fedora Linux</li>
-						<li class="tag">Terraform</li>
-						<li class="tag">Ansible</li>
-						<li class="tag">Kubernetes</li>
-						<li class="tag">Cilium</li>
-						<li class="tag">Flux</li>
-						<li class="tag">SOPS</li>
-					</ul>
-					<div class="button-row">
-						<a
-							class="button button-primary"
-							href={HOMELAB_REPOSITORY_URL}
-							target="_blank"
-							rel="noreferrer"
-						>
-							View the repository <span aria-hidden="true">↗</span>
-						</a>
-						<a class="button button-secondary" href="/blog">
-							Read project notes
-						</a>
-					</div>
+					<strong>03</strong>
+					<span>Proxmox nodes</span>
 				</div>
-
-				<dl class="fact-list">
-					<div>
-						<dt>Physical layer</dt>
-						<dd>3-node Proxmox cluster</dd>
-					</div>
-					<div>
-						<dt>Compute layer</dt>
-						<dd>Fedora Kubernetes nodes</dd>
-					</div>
-					<div>
-						<dt>Delivery model</dt>
-						<dd>Infrastructure as code and GitOps</dd>
-					</div>
-					<div>
-						<dt>Operations</dt>
-						<dd>Metrics, runbooks, and failure testing</dd>
-					</div>
-				</dl>
-			</article>
+				<div>
+					<strong>IaC</strong>
+					<span>End-to-end rebuild</span>
+				</div>
+				<div>
+					<strong>Git</strong>
+					<span>Desired state</span>
+				</div>
+				<div>
+					<strong>HA</strong>
+					<span>Failure-tested design</span>
+				</div>
+			</div>
 		</section>
 
-		<section class="section" aria-labelledby="architecture-title">
-			<div class="section-heading">
-				<div>
-					<p class="eyebrow">Delivery architecture</p>
-					<h2 id="architecture-title">Each tool has a clear responsibility.</h2>
-					<p>
-						Keeping ownership boundaries explicit makes the rebuild
-						path easier to reason about and failures easier to isolate.
-					</p>
-				</div>
+		<section class="project-detail" aria-labelledby="architecture-title">
+			<div class="detail-heading">
+				<p class="eyebrow">System design</p>
+				<h2 id="architecture-title">One delivery chain, clear ownership.</h2>
+				<p>
+					Each tool has a bounded responsibility. That separation keeps
+					the rebuild path understandable and makes failures easier to
+					localize.
+				</p>
 			</div>
 
-			<div class="numbered-grid">
-				<article>
-					<span>01 / Provision</span>
+			<ol class="delivery-chain">
+				<li class="surface">
+					<div class="chain-topline">
+						<span>01</span>
+						<small>Provision</small>
+					</div>
 					<h3>Terraform</h3>
 					<p>
-						Defines virtual machines, compute, storage, network
-						settings, and placement across Proxmox.
+						Defines virtual machines, compute, storage, networking,
+						and placement across the Proxmox cluster.
 					</p>
-				</article>
-				<article>
-					<span>02 / Configure</span>
+				</li>
+				<li class="surface">
+					<div class="chain-topline">
+						<span>02</span>
+						<small>Configure</small>
+					</div>
 					<h3>Ansible</h3>
 					<p>
-						Builds the Fedora baseline, configures containerd, and
-						applies repeatable system hardening.
+						Builds a repeatable Fedora node baseline, installs the
+						container runtime, and applies system hardening.
 					</p>
-				</article>
-				<article>
-					<span>03 / Reconcile</span>
+				</li>
+				<li class="surface">
+					<div class="chain-topline">
+						<span>03</span>
+						<small>Reconcile</small>
+					</div>
 					<h3>Flux</h3>
 					<p>
-						Continuously applies controllers, shared configuration,
-						and applications from Git.
+						Continuously reconciles controllers, configuration, and
+						applications from version-controlled desired state.
 					</p>
-				</article>
-				<article>
-					<span>04 / Observe</span>
+				</li>
+				<li class="surface">
+					<div class="chain-topline">
+						<span>04</span>
+						<small>Observe</small>
+					</div>
 					<h3>Prometheus</h3>
 					<p>
-						Surfaces cluster and workload behavior through metrics,
-						dashboards, and health signals.
+						Exposes cluster health and workload behavior through
+						metrics, dashboards, and actionable signals.
 					</p>
+				</li>
+			</ol>
+		</section>
+
+		<section class="outcomes" aria-labelledby="outcomes-title">
+			<div class="detail-heading">
+				<p class="eyebrow">What the project demonstrates</p>
+				<h2 id="outcomes-title">Operational outcomes over tool collecting.</h2>
+			</div>
+
+			<div class="outcome-grid">
+				<article>
+					<span aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<path d="M20 7h-9M14 4l-3 3 3 3M4 17h9M10 14l3 3-3 3" />
+						</svg>
+					</span>
+					<div>
+						<h3>Repeatable rebuilds</h3>
+						<p>
+							The cluster can be destroyed and reconstructed
+							without undocumented manual intervention.
+						</p>
+					</div>
+				</article>
+				<article>
+					<span aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<path d="M4 19V9m5 10V5m5 14v-7m5 7V3" />
+						</svg>
+					</span>
+					<div>
+						<h3>Measurable behavior</h3>
+						<p>
+							Platform health is evaluated through telemetry and
+							explicit verification—not visual assumptions.
+						</p>
+					</div>
+				</article>
+				<article>
+					<span aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<path d="M12 3 4 7v5c0 4.4 3.1 7.7 8 9 4.9-1.3 8-4.6 8-9V7l-8-4Z" />
+							<path d="m8.5 12 2.2 2.2 4.8-5" />
+						</svg>
+					</span>
+					<div>
+						<h3>Tested resilience</h3>
+						<p>
+							Node failures, recovery paths, and backup assumptions
+							are tested as engineering requirements.
+						</p>
+					</div>
+				</article>
+				<article>
+					<span aria-hidden="true">
+						<svg viewBox="0 0 24 24">
+							<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3V4Z" />
+							<path d="M8 20a3 3 0 0 1 0-6h11M9 8h6" />
+						</svg>
+					</span>
+					<div>
+						<h3>Durable knowledge</h3>
+						<p>
+							Procedures, architecture decisions, and incident
+							lessons live alongside the implementation.
+						</p>
+					</div>
 				</article>
 			</div>
 		</section>
 
-		<section class="section" aria-labelledby="outcomes-title">
-			<div class="section-heading">
-				<div>
-					<p class="eyebrow">What the project demonstrates</p>
-					<h2 id="outcomes-title">Operational outcomes, not a tool inventory.</h2>
-				</div>
-			</div>
-
-			<div class="card-grid">
-				<article class="card">
-					<span class="card-number">01</span>
-					<h3>Repeatable rebuilds</h3>
-					<p>
-						The cluster lifecycle is expressed in code and procedures
-						instead of relying on undocumented manual steps.
-					</p>
-				</article>
-				<article class="card">
-					<span class="card-number">02</span>
-					<h3>Visible system behavior</h3>
-					<p>
-						Telemetry and verification make health and failure states
-						inspectable before decisions are made.
-					</p>
-				</article>
-				<article class="card">
-					<span class="card-number">03</span>
-					<h3>Tested recovery paths</h3>
-					<p>
-						Node failures, application rollouts, and restore
-						assumptions are treated as engineering work.
-					</p>
-				</article>
-			</div>
-		</section>
-
-		<section class="section split-section" aria-labelledby="site-title">
+		<section class="site-project surface" aria-labelledby="site-project-title">
 			<div>
 				<p class="eyebrow">Application delivery</p>
-				<h2 id="site-title">This portfolio runs on the platform.</h2>
+				<h2 id="site-project-title">This website runs through the platform.</h2>
+				<p>
+					The site is statically built with Astro, packaged in a
+					hardened unprivileged container, published to GHCR, pinned by
+					digest, and reconciled into Kubernetes by Flux. Traefik and
+					cert-manager complete the public delivery path.
+				</p>
 			</div>
-			<div class="body-copy">
-				<p>
-					Astro produces a static site, GitHub Actions publishes an
-					unprivileged container to GHCR, and Flux automatically
-					promotes immutable image digests into separate preview and
-					production Kubernetes workloads.
-				</p>
-				<p>
-					The pipeline gives the site the same review, rollback, and
-					audit trail expected from the rest of the infrastructure.
-				</p>
-				<div class="pipeline" aria-label="Website delivery pipeline">
-					<span>Markdown</span>
-					<i aria-hidden="true">→</i>
-					<span>Astro</span>
-					<i aria-hidden="true">→</i>
-					<span>GHCR</span>
-					<i aria-hidden="true">→</i>
-					<span>Flux</span>
-					<i aria-hidden="true">→</i>
-					<span>Kubernetes</span>
-				</div>
+
+			<div class="site-flow" aria-label="Website delivery flow">
+				<span>Astro</span>
+				<i aria-hidden="true">→</i>
+				<span>GHCR</span>
+				<i aria-hidden="true">→</i>
+				<span>Flux</span>
+				<i aria-hidden="true">→</i>
+				<span>Kubernetes</span>
 			</div>
 		</section>
 
-		<section class="section split-section" aria-labelledby="stack-title">
-			<div>
+		<section class="stack-section" aria-labelledby="stack-title">
+			<div class="detail-heading">
 				<p class="eyebrow">Technology</p>
 				<h2 id="stack-title">Current platform stack.</h2>
 			</div>
-			<dl class="stack-table">
-				<div>
-					<dt>Compute</dt>
-					<dd>Proxmox · Fedora Linux</dd>
-				</div>
-				<div>
-					<dt>Automation</dt>
-					<dd>Terraform · Ansible · Python</dd>
-				</div>
-				<div>
-					<dt>Platform</dt>
-					<dd>Kubernetes · Cilium · Flux</dd>
-				</div>
-				<div>
-					<dt>Traffic</dt>
-					<dd>Traefik · cert-manager · Cloudflare</dd>
-				</div>
-				<div>
-					<dt>Visibility</dt>
-					<dd>Prometheus · Grafana</dd>
-				</div>
-				<div>
-					<dt>Delivery</dt>
-					<dd>GitHub Actions · GHCR · SOPS</dd>
-				</div>
-			</dl>
+
+			<ul class="stack-list">
+				<li>
+					<span>Compute</span>
+					<strong>Proxmox · Fedora Linux</strong>
+				</li>
+				<li>
+					<span>Automation</span>
+					<strong>Terraform · Ansible</strong>
+				</li>
+				<li>
+					<span>Platform</span>
+					<strong>Kubernetes · Cilium · Flux</strong>
+				</li>
+				<li>
+					<span>Traffic</span>
+					<strong>Traefik · cert-manager · Cloudflare</strong>
+				</li>
+				<li>
+					<span>Visibility</span>
+					<strong>Prometheus · Grafana</strong>
+				</li>
+				<li>
+					<span>Delivery</span>
+					<strong>GitHub Actions · GHCR</strong>
+				</li>
+			</ul>
 		</section>
 	</main>
 </BaseLayout>
+
+<style>
+	.flagship {
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 0.6fr);
+		gap: clamp(2rem, 6vw, 5rem);
+		padding: clamp(1.5rem, 5vw, 3.5rem);
+	}
+
+	.project-labels {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.project-labels span {
+		padding: 0.3rem 0.6rem;
+		border-radius: 999px;
+		background: var(--color-accent-soft);
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.project-labels span:last-child {
+		background: rgba(148, 166, 184, 0.08);
+		color: var(--color-text-subtle);
+	}
+
+	.flagship h2 {
+		max-width: 15ch;
+	}
+
+	.project-summary {
+		max-width: 44rem;
+		margin-top: 1.25rem;
+		font-size: 1.05rem;
+	}
+
+	.project-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: 2rem;
+	}
+
+	.project-stats {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		align-content: center;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		background:
+			linear-gradient(rgba(var(--color-accent-rgb), 0.025) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(var(--color-accent-rgb), 0.025) 1px, transparent 1px),
+			rgba(8, 13, 18, 0.5);
+		background-size: 22px 22px;
+	}
+
+	.project-stats div {
+		display: flex;
+		justify-content: center;
+		flex-direction: column;
+		min-height: 8rem;
+		padding: 1rem;
+		border-right: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-border);
+		text-align: center;
+	}
+
+	.project-stats div:nth-child(2n) {
+		border-right: 0;
+	}
+
+	.project-stats div:nth-last-child(-n + 2) {
+		border-bottom: 0;
+	}
+
+	.project-stats strong {
+		color: var(--color-accent-strong);
+		font-family: var(--font-mono);
+		font-size: 1.3rem;
+	}
+
+	.project-stats span {
+		margin-top: 0.3rem;
+		color: var(--color-text-subtle);
+		font-size: 0.72rem;
+	}
+
+	.project-detail,
+	.outcomes,
+	.site-project,
+	.stack-section {
+		margin-top: clamp(5rem, 10vw, 8rem);
+	}
+
+	.detail-heading {
+		max-width: 44rem;
+		margin-bottom: 2.5rem;
+	}
+
+	.detail-heading h2 {
+		margin-top: 0.9rem;
+	}
+
+	.detail-heading > p:last-child {
+		margin-top: 1.1rem;
+	}
+
+	.delivery-chain {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 0.8rem;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.delivery-chain li {
+		position: relative;
+		min-height: 17rem;
+		padding: 1.3rem;
+	}
+
+	.delivery-chain li:not(:last-child)::after {
+		position: absolute;
+		z-index: 2;
+		top: 2.35rem;
+		right: -0.8rem;
+		width: 0.8rem;
+		height: 1px;
+		background: var(--color-accent-border);
+		content: "";
+	}
+
+	.chain-topline {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 4rem;
+		font-family: var(--font-mono);
+		font-size: 0.64rem;
+	}
+
+	.chain-topline span {
+		color: var(--color-accent);
+	}
+
+	.chain-topline small {
+		color: var(--color-text-subtle);
+		text-transform: uppercase;
+	}
+
+	.delivery-chain h3 {
+		margin-bottom: 0.7rem;
+	}
+
+	.delivery-chain p {
+		margin: 0;
+		font-size: 0.88rem;
+	}
+
+	.outcome-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		border-block: 1px solid var(--color-border);
+	}
+
+	.outcome-grid article {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 1rem;
+		padding: 2rem;
+		border-right: 1px solid var(--color-border);
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.outcome-grid article:nth-child(2n) {
+		border-right: 0;
+	}
+
+	.outcome-grid article:nth-last-child(-n + 2) {
+		border-bottom: 0;
+	}
+
+	.outcome-grid article > span {
+		display: grid;
+		width: 2.6rem;
+		height: 2.6rem;
+		place-items: center;
+		border: 1px solid var(--color-accent-border);
+		border-radius: 0.75rem;
+		background: var(--color-accent-soft);
+		color: var(--color-accent);
+	}
+
+	.outcome-grid svg {
+		width: 1.2rem;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 1.6;
+	}
+
+	.outcome-grid h3 {
+		margin: 0.15rem 0 0.55rem;
+	}
+
+	.outcome-grid p {
+		margin: 0;
+		font-size: 0.9rem;
+	}
+
+	.site-project {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		gap: 3rem;
+		padding: clamp(1.5rem, 5vw, 3rem);
+	}
+
+	.site-project h2 {
+		max-width: 18ch;
+		margin-top: 0.9rem;
+		font-size: clamp(1.8rem, 4vw, 2.8rem);
+	}
+
+	.site-project h2 + p {
+		max-width: 44rem;
+		margin-top: 1rem;
+	}
+
+	.site-flow {
+		display: flex;
+		align-items: center;
+		gap: 0.65rem;
+		padding: 1rem;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-md);
+		background: rgba(8, 13, 18, 0.5);
+	}
+
+	.site-flow span {
+		padding: 0.42rem 0.62rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.5rem;
+		background: var(--color-surface);
+		color: var(--color-text);
+		font-family: var(--font-mono);
+		font-size: 0.65rem;
+		white-space: nowrap;
+	}
+
+	.site-flow i {
+		color: var(--color-accent);
+		font-style: normal;
+	}
+
+	.stack-list {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		margin: 0;
+		padding: 0;
+		border-top: 1px solid var(--color-border);
+		list-style: none;
+	}
+
+	.stack-list li {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.5rem;
+		padding: 1.2rem 0;
+		border-bottom: 1px solid var(--color-border);
+	}
+
+	.stack-list li:nth-child(odd) {
+		padding-right: 2rem;
+		border-right: 1px solid var(--color-border);
+	}
+
+	.stack-list li:nth-child(even) {
+		padding-left: 2rem;
+	}
+
+	.stack-list span {
+		color: var(--color-text-subtle);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		text-transform: uppercase;
+	}
+
+	.stack-list strong {
+		font-size: 0.88rem;
+		text-align: right;
+	}
+
+	@media (max-width: 960px) {
+		.flagship {
+			grid-template-columns: 1fr;
+		}
+
+		.project-stats {
+			max-width: 38rem;
+		}
+
+		.delivery-chain {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.delivery-chain li:not(:last-child)::after {
+			display: none;
+		}
+
+		.site-project {
+			grid-template-columns: 1fr;
+		}
+
+		.site-flow {
+			width: fit-content;
+			max-width: 100%;
+			overflow-x: auto;
+		}
+	}
+
+	@media (max-width: 720px) {
+		.project-actions,
+		.project-actions .button {
+			width: 100%;
+		}
+
+		.delivery-chain,
+		.outcome-grid,
+		.stack-list {
+			grid-template-columns: 1fr;
+		}
+
+		.delivery-chain li {
+			min-height: auto;
+		}
+
+		.chain-topline {
+			margin-bottom: 2.5rem;
+		}
+
+		.outcome-grid article {
+			padding: 1.5rem 0;
+			border-right: 0;
+		}
+
+		.outcome-grid article:nth-last-child(2) {
+			border-bottom: 1px solid var(--color-border);
+		}
+
+		.stack-list li,
+		.stack-list li:nth-child(odd),
+		.stack-list li:nth-child(even) {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0.35rem;
+			padding: 1rem 0;
+			border-right: 0;
+		}
+
+		.stack-list strong {
+			text-align: left;
+		}
+	}
+</style>

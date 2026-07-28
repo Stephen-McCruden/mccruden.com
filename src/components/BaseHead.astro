@@ -13,26 +13,11 @@ interface Props {
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 const { title, description, image } = Astro.props;
-const personSchema = {
-	'@context': 'https://schema.org',
-	'@type': 'Person',
-	name: 'Stephen McCruden',
-	url: Astro.site?.toString(),
-	jobTitle: 'Field Engineer',
-	sameAs: ['https://github.com/Stephen-McCruden'],
-	knowsAbout: [
-		'Linux',
-		'Infrastructure automation',
-		'Kubernetes',
-		'GitOps',
-		'Observability',
-	],
-};
 ---
 
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<meta name="theme-color" content="#0d0e10" />
+<meta name="theme-color" content="#0b1117" />
 <meta name="color-scheme" content="dark" />
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
@@ -62,5 +47,3 @@ const personSchema = {
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 {image && <meta name="twitter:image" content={new URL(image.src, Astro.url)} />}
-
-<script type="application/ld+json" set:html={JSON.stringify(personSchema)} />

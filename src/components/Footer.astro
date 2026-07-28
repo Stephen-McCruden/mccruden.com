@@ -9,80 +9,100 @@ const currentYear = new Date().getFullYear();
 		<div class="footer-intro">
 			<a class="footer-brand" href="/">Stephen McCruden</a>
 			<p>
-				Field engineer building practical experience in infrastructure,
-				automation, Kubernetes, and reliability engineering.
+				Field engineering experience, infrastructure automation, and
+				reliability thinking—documented in the open.
 			</p>
 		</div>
 
 		<nav aria-label="Footer navigation">
-			<a href="/projects">Projects</a>
-			<a href="/blog">Writing</a>
-			<a href="/about">About</a>
-			<a href={GITHUB_PROFILE_URL} target="_blank" rel="noreferrer">
-				GitHub <span aria-hidden="true">↗</span>
-			</a>
+			<div>
+				<p class="nav-label">Explore</p>
+				<a href="/projects">Projects</a>
+				<a href="/blog">Writing</a>
+				<a href="/about">About</a>
+			</div>
+			<div>
+				<p class="nav-label">Elsewhere</p>
+				<a href={GITHUB_PROFILE_URL} target="_blank" rel="noreferrer">
+					GitHub <span aria-hidden="true">↗</span>
+				</a>
+			</div>
 		</nav>
 	</div>
 
 	<div class="footer-meta">
-		<p>&copy; {currentYear} Stephen McCruden</p>
-		<p>Astro · Kubernetes · GitOps</p>
+		<p>&copy; {currentYear} Stephen McCruden.</p>
+		<p class="built-with">
+			<span aria-hidden="true"></span>
+			Built with Astro. Deployed through GitOps.
+		</p>
 	</div>
 </footer>
 
 <style>
 	.site-footer {
-		margin-top: 1rem;
-		border-top: 1px solid var(--color-border-strong);
-		background: var(--color-surface);
+		margin-top: 5rem;
+		border-top: 1px solid var(--color-border);
+		background: rgba(8, 13, 18, 0.72);
 	}
 
 	.footer-inner,
 	.footer-meta {
-		width: min(var(--content-width), calc(100% - 2.5rem));
+		width: min(var(--content-width), calc(100% - 2rem));
 		margin-inline: auto;
 	}
 
 	.footer-inner {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		gap: 3rem;
-		padding-block: 3.5rem;
-	}
-
-	.footer-intro {
-		max-width: 34rem;
+		display: grid;
+		grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.8fr);
+		gap: 4rem;
+		padding-block: 4rem 3rem;
 	}
 
 	.footer-brand {
 		color: var(--color-text);
-		font-size: 1.08rem;
+		font-size: 1.1rem;
 		font-weight: 700;
 		text-decoration: none;
 	}
 
 	.footer-intro p {
-		margin: 0.75rem 0 0;
+		max-width: 42ch;
+		margin: 0.8rem 0 0;
+		color: var(--color-text-muted);
 		font-size: 0.95rem;
 	}
 
 	nav {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0.75rem 1.5rem;
-		justify-content: flex-end;
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 2rem;
+	}
+
+	nav div {
+		display: grid;
+		align-content: start;
+		gap: 0.55rem;
+	}
+
+	.nav-label {
+		margin: 0 0 0.3rem;
+		color: var(--color-text-subtle);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		font-weight: 700;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
 	}
 
 	nav a {
 		color: var(--color-text-muted);
-		font-size: 0.92rem;
-		font-weight: 700;
+		font-size: 0.9rem;
 		text-decoration: none;
 	}
 
 	nav a:hover {
-		color: var(--color-accent-strong);
+		color: var(--color-accent);
 	}
 
 	.footer-meta {
@@ -90,30 +110,44 @@ const currentYear = new Date().getFullYear();
 		align-items: center;
 		justify-content: space-between;
 		gap: 1rem;
-		padding-block: 1.1rem;
+		padding-block: 1.15rem;
 		border-top: 1px solid var(--color-border);
+		color: var(--color-text-subtle);
+		font-size: 0.78rem;
 	}
 
 	.footer-meta p {
 		margin: 0;
-		color: var(--color-text-subtle);
-		font-size: 0.8rem;
 	}
 
-	@media (max-width: 680px) {
-		.footer-inner,
-		.footer-meta {
-			width: min(var(--content-width), calc(100% - 1.5rem));
+	.built-with {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.built-with span {
+		width: 0.4rem;
+		height: 0.4rem;
+		border-radius: 999px;
+		background: var(--color-accent);
+		box-shadow: 0 0 0 0.2rem rgba(var(--color-accent-rgb), 0.1);
+	}
+
+	@media (max-width: 720px) {
+		.site-footer {
+			margin-top: 3rem;
 		}
 
-		.footer-inner,
+		.footer-inner {
+			grid-template-columns: 1fr;
+			gap: 2.5rem;
+			padding-block: 3rem 2rem;
+		}
+
 		.footer-meta {
 			align-items: flex-start;
 			flex-direction: column;
-		}
-
-		nav {
-			justify-content: flex-start;
 		}
 	}
 </style>
