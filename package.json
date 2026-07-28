@@ -1,5 +1,7 @@
 {
-  "name": "",
+  "name": "mccruden.com",
+  "private": true,
+  "description": "Stephen McCruden's infrastructure engineering portfolio and technical blog",
   "type": "module",
   "version": "0.0.1",
   "engines": {
@@ -12,10 +14,12 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^7.0.3",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.1.3",
     "sharp": "^0.35.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
   }
 }

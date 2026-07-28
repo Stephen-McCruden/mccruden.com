@@ -1,86 +1,265 @@
 ---
 import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
-import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
 import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import { SITE_TITLE } from '../consts';
+import BaseLayout from './BaseLayout.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const {
+	title,
+	description,
+	pubDate,
+	updatedDate,
+	heroImage,
+	tags,
+} = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<BaseLayout
+	title={`${title} | ${SITE_TITLE}`}
+	description={description}
+	image={heroImage}
+>
+	<main id="main-content" class="article-page">
+		<article>
+			<header class="article-header">
+				<a class="back-link" href="/blog">
+					<span aria-hidden="true">←</span>
+					All writing
+				</a>
 
-	<body>
-		<Header />
-		<main>
-			<article>
-				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+				<div class="article-meta">
+					<span><FormattedDate date={pubDate} /></span>
+					{
+						updatedDate && (
+							<span>
+								Updated <FormattedDate date={updatedDate} />
+							</span>
+						)
+					}
 				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+
+				<h1>{title}</h1>
+				<p class="article-description">{description}</p>
+
+				{
+					tags.length > 0 && (
+						<ul class="tag-list" aria-label="Article topics">
+							{tags.map((tag) => <li class="tag">{tag}</li>)}
+						</ul>
+					)
+				}
+			</header>
+
+			{
+				heroImage && (
+					<div class="hero-image">
+						<Image
+							width={1120}
+							height={630}
+							src={heroImage}
+							alt=""
+						/>
 					</div>
+				)
+			}
+
+			<div class="article-grid">
+				<aside class="article-aside" aria-label="Article information">
+					<p>Filed under</p>
+					<strong>{tags[0] ?? 'Engineering note'}</strong>
+					<a href="/rss.xml">Subscribe via RSS →</a>
+				</aside>
+
+				<div class="prose">
 					<slot />
 				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
-</html>
+			</div>
+		</article>
+	</main>
+</BaseLayout>
+
+<style>
+	.article-page {
+		width: min(var(--content-width), calc(100% - 2rem));
+		margin-inline: auto;
+		padding-block: clamp(4rem, 8vw, 7rem);
+	}
+
+	.article-header {
+		max-width: 54rem;
+		margin-inline: auto;
+	}
+
+	.back-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		margin-bottom: 3rem;
+		color: var(--color-text-muted);
+		font-size: 0.84rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.back-link:hover {
+		color: var(--color-accent);
+	}
+
+	.article-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.7rem 1.2rem;
+		margin-bottom: 1.2rem;
+		color: var(--color-accent);
+		font-family: var(--font-mono);
+		font-size: 0.68rem;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.article-header h1 {
+		font-size: clamp(2.8rem, 7vw, 5rem);
+	}
+
+	.article-description {
+		max-width: 44rem;
+		margin-top: 1.4rem;
+		font-size: clamp(1.08rem, 2vw, 1.25rem);
+	}
+
+	.article-header .tag-list {
+		margin-top: 1.7rem;
+	}
+
+	.hero-image {
+		margin-top: clamp(3rem, 7vw, 5rem);
+	}
+
+	.hero-image img {
+		width: 100%;
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-lg);
+		box-shadow: var(--shadow-lg);
+	}
+
+	.article-grid {
+		display: grid;
+		grid-template-columns: minmax(8rem, 0.4fr) minmax(0, 1.6fr);
+		gap: clamp(2rem, 7vw, 6rem);
+		max-width: 62rem;
+		margin: clamp(4rem, 8vw, 6rem) auto 0;
+	}
+
+	.article-aside {
+		position: sticky;
+		top: 6.5rem;
+		align-self: start;
+		padding-top: 0.3rem;
+	}
+
+	.article-aside p,
+	.article-aside strong,
+	.article-aside a {
+		display: block;
+		font-size: 0.72rem;
+	}
+
+	.article-aside p {
+		margin: 0;
+		color: var(--color-text-subtle);
+		font-family: var(--font-mono);
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
+	.article-aside strong {
+		margin-top: 0.35rem;
+		color: var(--color-text);
+	}
+
+	.article-aside a {
+		margin-top: 1.5rem;
+		font-weight: 700;
+		text-decoration: none;
+	}
+
+	.prose {
+		min-width: 0;
+		color: var(--color-text-muted);
+		font-size: 1.05rem;
+	}
+
+	.prose :global(h2),
+	.prose :global(h3),
+	.prose :global(h4) {
+		scroll-margin-top: 6rem;
+	}
+
+	.prose :global(h2) {
+		margin: 3.5rem 0 1.2rem;
+		font-size: clamp(1.8rem, 4vw, 2.4rem);
+	}
+
+	.prose :global(h3) {
+		margin: 2.5rem 0 1rem;
+	}
+
+	.prose :global(p),
+	.prose :global(ul),
+	.prose :global(ol) {
+		margin-block: 0 1.5rem;
+	}
+
+	.prose :global(li) {
+		margin-bottom: 0.55rem;
+	}
+
+	.prose :global(a) {
+		font-weight: 700;
+	}
+
+	.prose :global(img) {
+		margin-block: 2.5rem;
+		border: 1px solid var(--color-border);
+	}
+
+	.prose :global(pre) {
+		margin-block: 2rem;
+	}
+
+	.prose :global(table) {
+		display: block;
+		margin-block: 2rem;
+		overflow-x: auto;
+		font-size: 0.9rem;
+	}
+
+	@media (max-width: 780px) {
+		.article-grid {
+			grid-template-columns: 1fr;
+			gap: 2.5rem;
+		}
+
+		.article-aside {
+			position: static;
+			display: flex;
+			align-items: baseline;
+			flex-wrap: wrap;
+			gap: 0.4rem 0.8rem;
+			padding-bottom: 1.25rem;
+			border-bottom: 1px solid var(--color-border);
+		}
+
+		.article-aside strong,
+		.article-aside a {
+			margin-top: 0;
+		}
+
+		.article-aside a {
+			margin-left: auto;
+		}
+	}
+</style>

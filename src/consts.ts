@@ -1,5 +1,8 @@
-// Place any global data in this file.
-// You can import this data from anywhere in your site by using the `import` keyword.
+export const SITE_TITLE = 'Stephen McCruden';
 
-export const SITE_TITLE = 'Astro Blog';
-export const SITE_DESCRIPTION = 'Welcome to my website!';
+export const SITE_DESCRIPTION =
+	'Field Service Technician II building reliable infrastructure, reproducible Kubernetes platforms, and observable self-hosted systems.';
+
+export const GITHUB_PROFILE_URL = 'https://github.com/Stephen-McCruden';
+export const HOMELAB_REPOSITORY_URL =
+	'https://github.com/Stephen-McCruden/homelab';

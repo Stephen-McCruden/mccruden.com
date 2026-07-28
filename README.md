@@ -1,63 +1,65 @@
-# Astro Starter Kit: Blog
+# mccruden.com
 
-```sh
-npm create astro@latest -- --template blog
+Stephen McCruden's infrastructure engineering portfolio and technical blog.
+
+The site is built with Astro, packaged as an unprivileged NGINX container, and
+deployed to Kubernetes through GitHub Actions and Flux.
+
+## Local development
+
+Requires Node.js 22.12 or newer.
+
+```bash
+npm ci
+npm run dev
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Create the production build with:
 
-Features:
+```bash
+npm run build
+```
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and Open Graph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+## Writing
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+Posts are ordinary Markdown files under `src/content/blog/`. Copy
+`_template.md`, rename it with a descriptive slug, and write in Obsidian or any
+Markdown editor.
 
 ```text
-├── public/
-├── src/
-│   ├── assets/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
-├── package.json
-└── tsconfig.json
+src/content/blog/rebuilding-kubernetes-from-code.md
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+Keep `draft: true` while writing. Set `draft: false` when the article should be
+included in the generated site.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Automated environments
 
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
+Every non-`main` branch publishes to the fixed preview environment. The
+`main` branch publishes to production.
 
-Any static assets, like images, can be placed in the `public/` directory.
+| Git branch | Image channel | Website |
+|---|---|---|
+| Any non-`main` branch | `preview-<run>-<commit>` | `preview.mccruden.com` |
+| `main` | `production-<run>-<commit>` | `mccruden.com` |
 
-## 🧞 Commands
+GitHub Actions builds the container and publishes a unique image tag to GHCR.
+Flux selects that channel's newest image, records its immutable digest in the
+homelab Git repository, and rolls out the corresponding Kubernetes Deployment.
 
-All commands are run from the root of the project, from a terminal:
+No routine Docker command, digest lookup, Kubernetes edit, or Flux
+reconciliation is required.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+See [docs/PUBLISHING.md](docs/PUBLISHING.md) for the complete preview,
+production, verification, and rollback procedure.
 
-## 👀 Want to learn more?
+## Runtime design
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
-
-## Credit
-
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+- multi-stage container build
+- unprivileged NGINX runtime
+- read-only Kubernetes root filesystem
+- separate preview and production Deployments
+- immutable image digest deployment
+- rolling updates with health probes
+- Git history for every release
+- no database or persistent volume
