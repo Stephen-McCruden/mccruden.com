@@ -6,6 +6,10 @@ updatedDate: 2026-08-08
 tags:
   - Kubernetes
   - Reliability
+  - SRE
+  - DevOps
+  - Homelab
+  - Grafana
 draft: false
 ---
 ## Summary
