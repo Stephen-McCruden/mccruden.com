@@ -11,7 +11,7 @@ tags:
   - Ansible
   - SOPS
   - Azure
-draft: true
+draft: false
 ---
 ## Summary
 
