@@ -1,8 +1,8 @@
 ---
 title: Configuring a New Workstation for My Homelab
 description: The process I used to prepare a new workstation to manage, decrypt, configure, and provision my homelab infrastructure.
-pubDate: 2026-08-28
-updatedDate: 2026-08-28
+pubDate: 2026-09-28
+updatedDate: 2026-10-16
 tags:
   - Homelab
   - Kubernetes
@@ -15,105 +15,52 @@ draft: false
 ---
 ## Summary
 
-Setting up a new workstation for my homelab involves more than cloning a few repositories. The workstation needs access to encrypted configuration, permission to connect to the Kubernetes virtual machines, the same infrastructure tooling as my previous machine, and authenticated sessions for the cloud services that back my secrets and Terraform state.
+Setting up a new workstation for my homelab involves more than cloning a few repositories. The machine needs access to encrypted configuration, SSH access to the Kubernetes virtual machines, infrastructure tooling, and authenticated sessions for the services supporting the lab.
 
-This post documents the full process I followed to turn a clean workstation into a trusted homelab administration machine.
+My laptop runs **Omarchy Quattro 4, which is based on Arch Linux**. This post documents the process of turning that installation into a workstation I can use to administer my infrastructure.
+
+The goal was to restore administrative access and verify that everything worked before making infrastructure changes.
 
 ---
-
 ## What the Workstation Needs to Do
 
-Before installing anything, I wrote down the capabilities the finished workstation needed:
+Before configuring anything, I identified the capabilities the finished workstation needed:
 
-- Clone and work with my homelab repositories over SSH.
-- Decrypt and edit SOPS-managed secrets.
-- Authenticate to Azure for Key Vault access and Terraform provisioning.
-- Run `kubectl` against my Kubernetes clusters.
-- Run Terraform plans and applies using the correct remote state and credentials.
-- Run Ansible against the Kubernetes virtual machines.
-- Connect to those virtual machines over SSH using a workstation-specific key.
+- Clone and update my homelab repositories over SSH.
+- Connect to the Kubernetes virtual machines.
+- Decrypt and edit SOPS-managed configuration.
+- Authenticate to Azure for the resources that require it.
+- Access the Kubernetes cluster through `kubectl`.
+- Initialize Terraform against the correct remote state.
+- Run Ansible against the intended hosts.
 
-That list gave me a useful order of operations: establish identity first, install the tools second, authenticate third, and validate access before making any infrastructure changes.
+These capabilities depend on separate credentials. Git access does not automatically provide VM access, and an Azure login does not automatically authenticate Terraform to every backend or provider.
 
----
-## 1. Create a Workstation-Specific SSH Key
-
-I created a new SSH key for this workstation rather than copying the private SSH key from another machine. Giving each workstation its own identity makes rotation and revocation much simpler if a machine is lost or retired.
-
-```bash
-ssh-keygen -t ed25519 -a 100 -f ~/.ssh/<homelab-key-name> -C "<workstation-name>"
-```
-
-I then added the public key—not the private key—to the authorized keys managed for each Kubernetes VM. In my environment, that means updating `<Ansible inventory, cloud-init configuration, or repository path>` and applying the change through `<the normal configuration-management workflow>`.
-
-```bash
-cat ~/.ssh/<homelab-key-name>.pub
-```
-
-After the authorized key was deployed, I tested each host explicitly:
-
-```bash
-ssh -i ~/.ssh/<homelab-key-name> <user>@<kubernetes-vm>
-```
-
-I also added a narrowly scoped entry to `~/.ssh/config` so that Ansible and my own SSH sessions consistently use the new key:
-
-```sshconfig
-Host <homelab-host-pattern>
-  User <remote-user>
-  IdentityFile ~/.ssh/<homelab-key-name>
-  IdentitiesOnly yes
-```
-
-To distribute the new public key, I added it to `terraform.tfvars` in the `ssh_public_keys` string array on my existing workstation. I then also manually moved the public key over to each VM via my existing workstation as running a `terraform apply` would reboot each VM and cause downtime.
+That distinction helped me organize the setup: install the tools, establish access, restore configuration, and validate each capability independently.
 
 ---
-## 2. Retrieve My SOPS Private Key Securely
+## 1. Prepare the Omarchy Toolchain
 
-My homelab repositories contain secrets encrypted with SOPS. A clean workstation can clone those files, but it cannot decrypt them until it has the corresponding private key.
+Because Omarchy is based on Arch Linux, I used its package-management tooling to prepare the workstation.
 
-I retrieved the SOPS private key from `<offline backup, password manager, removable media, or other secure recovery location>`. I transferred it directly to the expected local key store with restrictive permissions. I did not send it through chat or email, paste it into a repository, or include its contents in shell history.
+The tools required for my workflow were:
 
-```bash
-mkdir -p <sops-key-directory>
-chmod 700 <sops-key-directory>
-# Securely place the recovered key at <sops-key-path>.
-chmod 600 <sops-key-path>
-```
+| Tool | Purpose |
+|---|---|
+| Git and OpenSSH | Repository access and remote administration |
+| kubectl | Kubernetes administration |
+| Azure CLI | Azure authentication and resource access |
+| Terraform | Infrastructure provisioning |
+| SOPS | Encrypted configuration |
+| Ansible | Host configuration and validation |
 
-Depending on the SOPS backend, I may also need to set an environment variable such as `<SOPS key-file environment variable>` or configure the appropriate key store. The exact path and variable belong in my private workstation documentation, not in this public post.
+Before installing or upgrading tools, I checked the versions required by my repositories. A new workstation does not necessarily need the newest version of every tool; it needs versions compatible with the infrastructure and automation it manages.
 
-I validated the key with a read-only decrypt operation against a known encrypted file:
-
-```bash
-sops decrypt <path-to-encrypted-test-file> >/dev/null
-```
-
-That proved the key worked without writing decrypted secrets to disk or printing them.
-
----
-## 3. Install the Infrastructure Toolchain
-
-Next I installed the command-line tools used throughout the homelab:
-
-- `kubectl` for Kubernetes administration.
-- Azure CLI (`az`) for Azure authentication and Key Vault access.
-- Terraform for provisioning and managing infrastructure.
-- SOPS for encrypted configuration.
-- Ansible for configuring the Kubernetes VMs and other hosts.
+After installation, I checked the available versions:
 
 ```bash
-# Replace these placeholders with commands for the specific workstation's OS.
-<install kubectl>
-<install Azure CLI>
-<install Terraform>
-<install SOPS>
-<install Ansible>
-```
-
-I prefer the vendors' signed package repositories or a version manager where practical. After installation, I captured the versions so I could compare them with the versions used by CI and my previous workstation:
-
-```bash
+git --version
+ssh -V
 kubectl version --client
 az version
 terraform version
@@ -121,10 +68,119 @@ sops --version
 ansible --version
 ```
 
----
-## 4. Authenticate to Azure
+This gave me a baseline for comparing the laptop with my existing workstation and troubleshooting any differences.
 
-Azure serves two separate needs in this workflow: access to Key Vault and credentials for Terraform provisioning. I authenticated with the Azure CLI and selected the intended tenant and subscription rather than trusting whatever default happened to be active.
+---
+## 2. Establish Git Access and Clone the Repositories
+
+The first access check was authentication to GitHub.
+
+GitHub authentication and VM authentication serve different purposes. I configured the GitHub SSH identity separately from the workstation-specific key used to administer my virtual machines.
+
+To test GitHub authentication:
+
+```bash
+ssh -T git@github.com
+```
+
+On a first connection, I verified the host fingerprint before accepting it.
+
+Once authentication worked, I cloned the repositories needed to administer the lab:
+
+```bash
+git clone git@github.com:<owner>/<homelab-repository>.git
+```
+
+I then reviewed the repository documentation, Terraform configuration, Ansible inventory, and any declared tool dependencies before continuing.
+
+Cloning the repository restored the configuration, but the workstation still needed the credentials required to use it.
+
+---
+## 3. Create a Workstation-Specific SSH Key for the VMs
+
+For VM administration, I created a new SSH key instead of copying the private key from my existing workstation.
+
+A separate key gives the laptop its own identity. If I lose or retire the machine, I can revoke its access without replacing the keys used by my other devices.
+
+```bash
+ssh-keygen -t ed25519 -a 100 \
+  -f ~/.ssh/homelab-laptop \
+  -C "homelab-laptop"
+```
+
+I protected the private key with a passphrase and retrieved the public key:
+
+```bash
+cat ~/.ssh/homelab-laptop.pub
+```
+
+In my Terraform configuration, the VM SSH keys are managed through the `ssh_public_keys` string array in `terraform.tfvars`. Using my existing workstation, I added the laptop’s public key to that configuration.
+
+However, applying that change through my current VM configuration would have rebooted the machines. To avoid interrupting the running lab, I also installed the public key directly on each VM through my existing workstation.
+
+This recorded the key in the provisioning configuration while allowing me to establish access without an immediate Terraform apply.
+
+Afterward, I tested each VM from the laptop:
+
+```bash
+ssh -i ~/.ssh/homelab-laptop <remote-user>@<vm-hostname>
+```
+
+I also added entries to `~/.ssh/config` so SSH consistently selected the intended identity:
+
+```sshconfig
+Host <vm-hostname>
+  User <remote-user>
+  IdentityFile ~/.ssh/homelab-laptop
+  IdentitiesOnly yes
+```
+
+The host entries need to match the names or addresses used by my Ansible inventory.
+
+---
+## 4. Restore SOPS Decryption Access
+
+My repositories contain encrypted configuration managed with SOPS. Cloning those files does not grant access to their contents.
+
+The workstation also needs access to the decryption identity configured for those files. For files encrypted to my age recipient, that means securely restoring the corresponding age private key.
+
+I prepared the local key directory with restrictive permissions:
+
+```bash
+mkdir -p ~/.config/sops/age
+chmod 700 ~/.config/sops/age
+```
+
+After securely restoring the key into `keys.txt`, I restricted access:
+
+```bash
+chmod 600 ~/.config/sops/age/keys.txt
+```
+
+When an explicit key-file setting is needed:
+
+```bash
+export SOPS_AGE_KEY_FILE="$HOME/.config/sops/age/keys.txt"
+```
+
+The path can be documented; the private key contents must remain protected.
+
+I tested decryption against a known encrypted file:
+
+```bash
+sops decrypt <encrypted-file-path> >/dev/null
+```
+
+This checked that SOPS could decrypt the file without printing the plaintext to the terminal or saving it as a separate file.
+
+Files using another SOPS backend require access to that backend as well.
+
+---
+## 5. Authenticate to Azure
+
+Azure authentication is another part of the workstation setup because my lab uses Azure-backed resources, including Key Vault.
+
+I signed in and explicitly selected the intended subscription:
 
 ```bash
 az login
@@ -133,27 +189,52 @@ az account set --subscription "<subscription-name-or-id>"
 az account show --output table
 ```
 
-If the workstation has no usable browser, the device-code login flow is an alternative:
+For a session without a usable browser, device-code authentication is an alternative:
 
 ```bash
 az login --use-device-code
 ```
 
-I then checked that my identity could reach the expected Key Vault without exposing any secret values:
+I checked access to the expected vault:
 
 ```bash
-az keyvault show --name <vault-name> --output table
-az keyvault secret list --vault-name <vault-name> --query "[].name" --output table
+az keyvault show \
+  --name <vault-name> \
+  --output table
 ```
 
-For Terraform, the Azure CLI session can provide local development credentials. I still verified the active subscription before running Terraform, because a valid login to the wrong subscription is more dangerous than a failed login.
+Where my permissions allowed it, I also checked secret metadata:
+
+```bash
+az keyvault secret list \
+  --vault-name <vault-name> \
+  --query "[].name" \
+  --output table
+```
+
+These checks validate metadata access. They do not establish that the identity can retrieve every secret or perform every required cryptographic operation.
+
+The relevant application or decryption workflow still needs its own validation.
 
 ---
-## 5. Configure Kubernetes Access
+## 6. Configure Kubernetes Access
 
-With `kubectl` installed, I restored or regenerated my kubeconfig using `<the cluster bootstrap or configuration process>`. I did not commit the kubeconfig because it can contain credentials and internal endpoint information.
+With the tools and network access available, I restored the kubeconfig required to reach my cluster.
 
-Before running any mutating command, I inspected the available contexts and selected the homelab context explicitly:
+A kubeconfig can contain credentials, so I kept it outside the repository and restricted access to it:
+
+```bash
+mkdir -p ~/.kube
+chmod 700 ~/.kube
+```
+
+After securely placing the configuration at `~/.kube/config`:
+
+```bash
+chmod 600 ~/.kube/config
+```
+
+Before interacting with the cluster, I inspected the available contexts:
 
 ```bash
 kubectl config get-contexts
@@ -169,75 +250,117 @@ kubectl get nodes -o wide
 kubectl auth can-i get pods --all-namespaces
 ```
 
----
-## 6. Initialize and Validate Terraform
+These checks helped confirm that the laptop could reach the cluster, authenticate, and perform the expected administrative reads.
 
-I cloned the infrastructure repository and moved to `<Terraform root module path>`. Before planning, I confirmed Azure was targeting the correct subscription and that the expected backend configuration was available.
+Checking the context explicitly is a habit I want to maintain as I add more environments.
+
+---
+## 7. Initialize and Validate Terraform
+
+Terraform requires more than an installed binary. It also needs the correct configuration, backend access, workspace, variables, and provider credentials.
+
+From the repository’s Terraform root directory:
 
 ```bash
-git clone <homelab-repository-url>
-cd <terraform-directory>
+cd <repository-path>/terraform
+
 terraform fmt -check -recursive
 terraform init
+terraform workspace show
 terraform validate
 terraform plan
 ```
 
-The first plan from a new workstation is an important safety check. My expected result was `<no changes, or a description of the expected changes>`. An unexpected large plan would indicate a credential, backend, workspace, provider, or configuration problem and would stop the setup process before any apply.
+Backend authentication and provider authentication are separate concerns. An Azure CLI session may support an Azure provider workflow, but it does not automatically grant access to a different remote-state service or to my Proxmox infrastructure.
 
-```bash
-terraform workspace show
-```
+I checked those credentials according to the repository’s configuration before reviewing the plan.
 
-I did not run `terraform apply` merely to test the installation. A successful initialization, validation, and reviewed plan were enough to prove that the workstation could participate in the provisioning workflow.
+The first plan from a new workstation is particularly useful. I compared its proposed changes with what I expected from the current repository and infrastructure.
 
----
-## 7. Validate Ansible Against the Kubernetes VMs
+Unexpected replacements, deletions, or widespread changes would be a reason to investigate before continuing.
 
-Finally, I checked that Ansible could load my inventory and use the new SSH identity:
-
-```bash
-cd <ansible-directory>
-ansible-inventory --inventory <inventory-path> --graph
-ansible <kubernetes-group> --inventory <inventory-path> --module-name ping
-```
-
-If the repository uses an `ansible.cfg`, collections, or roles, I also installed those declared dependencies:
-
-```bash
-ansible-galaxy collection install -r <collections-requirements-file>
-ansible-galaxy role install -r <roles-requirements-file>
-```
-
-The ping module confirmed SSH connectivity and Python availability without changing the remote systems. Once that passed, I used the repository's check-mode workflow where supported:
-
-```bash
-ansible-playbook --inventory <inventory-path> <playbook-path> --check --diff
-```
+I did not need to run `terraform apply` simply to prove that Terraform was installed correctly. Initialization, validation, and a reviewed plan provided the checks I needed.
 
 ---
+## 8. Validate Ansible Access
 
+Next, I checked that Ansible could load the inventory and connect using the laptop’s SSH identity.
+
+```bash
+cd <repository-path>/ansible
+
+ansible-inventory \
+  --inventory <inventory-path> \
+  --graph
+```
+
+If the repository declares collections or roles, those dependencies also need to be installed:
+
+```bash
+ansible-galaxy collection install \
+  -r <collections-requirements-file>
+
+ansible-galaxy role install \
+  -r <roles-requirements-file>
+```
+
+I then tested the Kubernetes VM group:
+
+```bash
+ansible <kubernetes-group> \
+  --inventory <inventory-path> \
+  --module-name ping
+```
+
+Ansible’s `ping` module checks remote execution and Python availability over the configured connection. It is different from an ICMP network ping.
+
+For playbooks that support check mode, I could then preview their behavior:
+
+```bash
+ansible-playbook \
+  --inventory <inventory-path> \
+  <playbook-path> \
+  --check
+```
+
+Check mode has limits, so I treat its output as an additional review step. I only enable diff output where the tasks are configured to avoid exposing sensitive values.
+
+---
 ## Validation Checklist
 
-At the end of the setup, I verified each capability independently:
+Before considering the laptop ready, I checked each capability:
 
-- [ ] The workstation can authenticate to the Git host using its own SSH key.
-- [ ] The new public SSH key is deployed to every required Kubernetes VM.
-- [ ] SOPS can decrypt a known file without writing plaintext to disk.
-- [ ] `kubectl` uses the correct context and can list the cluster nodes.
-- [ ] Azure CLI is logged in to the intended tenant and subscription.
-- [ ] The Azure identity can access the required Key Vault metadata.
-- [ ] Terraform can initialize its backend, validate the configuration, and produce the expected plan.
-- [ ] Ansible can parse the inventory and ping the Kubernetes VM group.
-- [ ] No private keys, decrypted files, kubeconfigs, Terraform state, or tokens appear in Git status.
+- [ ] GitHub authentication works with the configured Git identity.
+- [ ] The laptop’s public SSH key is recorded in the VM provisioning configuration.
+- [ ] SSH access works to every required VM.
+- [ ] SOPS can decrypt a known encrypted file.
+- [ ] Azure CLI targets the intended tenant and subscription.
+- [ ] The required Azure resource access works.
+- [ ] kubectl targets the correct context and can list cluster nodes.
+- [ ] Terraform initializes against the intended backend and workspace.
+- [ ] Terraform produces a plan I understand.
+- [ ] Ansible loads the inventory and successfully pings the VM group.
+- [ ] Pending Git changes contain no credentials or decrypted configuration.
+
+For the final repository review:
 
 ```bash
 git status --short
+git diff
+git diff --cached
 ```
+
+I also kept local credential files outside the repository. Git status alone cannot establish that a directory contains no sensitive files, particularly when files are ignored.
 
 ---
 ## What I Learned
 
-The most important part of building an administration workstation is not installing binaries. It is re-establishing trust in a deliberate, auditable way.
+The most useful part of this process was seeing how many independent pieces make an administration workstation functional.
 
-Separate SSH keys make workstation access revocable. A protected SOPS recovery process makes encrypted Git repositories useful without turning the private key into another unmanaged secret. Explicit Azure subscription and Kubernetes context checks reduce the chance of operating on the wrong environment. Read-only Terraform and Ansible validation proves the toolchain works before the new workstation is allowed to change infrastructure.
+The repositories hold the configuration, but using that configuration depends on SSH identities, decryption keys, cloud sessions, Kubernetes credentials, and remote-state access.
+
+The SSH key update also exposed a practical improvement for my lab: routine access changes should have a configuration-management path that does not require rebooting the VMs. Recording the key in Terraform and installing it manually worked for this migration, but I want future workstation onboarding to be more repeatable.
+
+My next step is to automate the nonsecret parts of the workstation setup: tool installation, repository checkout, configuration templates, and validation commands. Credential recovery and enrollment can remain explicit steps.
+
+That would make the next migration faster while preserving a clear understanding of what grants the workstation access.
