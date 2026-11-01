@@ -1,6 +1,6 @@
 # mccruden.com
 
-Stephen McCruden's infrastructure engineering portfolio and technical blog.
+My infrastructure engineering portfolio and technical blog.
 
 The site is built with Astro, packaged as an unprivileged NGINX container, and
 deployed to Kubernetes through GitHub Actions and Flux.
